@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// Uses double precision
+
+message Property{
+    repeated double value = 1;
+    repeated double variance = 2;
+}
+
+message State {
+    map<string, Property> properties = 1;
+}
