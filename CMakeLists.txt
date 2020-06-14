@@ -1,9 +1,10 @@
 cmake_minimum_required (VERSION 3.4)
 project (pillar_state
-    VERSION 0.0.0
-    LANGUAGES CXX
+  VERSION 0.0.0
+  LANGUAGES CXX
 )
 
+# Flags ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -11,27 +12,22 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # TODO: is this needed?
 add_compile_options(-Wall -Wextra)
 
-## Dependencies
+# Dependencies ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(Protobuf REQUIRED)
-
 add_subdirectory(proto)
 
-include_directories(${PROTOBUF_INCLUDE_DIR})
-
-## Library
+# Library ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 add_library(pillar_state SHARED
-    src/pillar_state.cpp
+  src/pillar_state.cpp
 )
 
-# # include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../franka-interface-common")
-# # include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../libfranka")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories(${PROTOBUF_INCLUDE_DIR})
 include_directories(include)
 
 target_link_libraries(pillar_state PUBLIC
-    proto
-    ${Protobuf_LIBRARIES}
+  proto
+  ${Protobuf_LIBRARIES}
 )
 
 target_include_directories(pillar_state PUBLIC
@@ -39,10 +35,9 @@ target_include_directories(pillar_state PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-## Installation
+# Installation ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 include(GNUInstallDirs)
 install(TARGETS pillar_state
-  # EXPORT FrankaTargets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   # RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -50,7 +45,7 @@ install(TARGETS pillar_state
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-# Tests #########################################
+# Tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 enable_testing()
 
 # Download and unpack googletest at configure time

@@ -1,8 +1,10 @@
 syntax = "proto3";
 
+package PillarMsg;
+
 // Uses double precision
 
-message Property{
+message Property {
     repeated double value = 1;
     repeated double variance = 2;
 }

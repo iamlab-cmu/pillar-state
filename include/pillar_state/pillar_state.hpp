@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "pillar_state/pillar_state.pb.h"
+
 // TODO: not sure to make this namespace Pillar
 namespace Pillar
 {
@@ -20,7 +22,7 @@ public:
     return true;
   }
 private:
-
+  PillarMsg::Property property;
 };
 
 } // Pillar

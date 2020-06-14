@@ -23,8 +23,6 @@ while [ "$1" != "" ]; do
     shift
 done
 
-cd pillar_state
-
 # Remove directory if we clean first
 if [ "$clean_build_dir" = "1" ]; then
     rm -rf build
@@ -35,4 +33,4 @@ mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --config -- -j$nproc
 
-cd ../..
+cd ..

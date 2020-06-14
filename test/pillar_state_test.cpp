@@ -1,8 +1,7 @@
 // #include <Eigen/Dense>
 #include "gtest/gtest.h"
 
-// #include "pillar_state/pillar_state.hpp"
-#include "pillar_state.hpp" // why doesn't the above line work?
+#include "pillar_state/pillar_state.hpp"
 
 // using namespace pillar_state;
 // using namespace Eigen;
