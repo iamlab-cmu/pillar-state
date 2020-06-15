@@ -1,7 +1,9 @@
 # pillar-state
 
 #
-Do this to build:
-`./make_scripts/make_pillar_state.sh`
+Do this to build (optional `-c | --clean`):
+`./make_pillar_state.sh [-c]`
 
-I need to add a clean option that will remove build for you first if you want
+#
+Run tests:
+`./build/pillar_state_test`

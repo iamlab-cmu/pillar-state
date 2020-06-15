@@ -84,7 +84,10 @@ endif()
 add_executable(pillar_state_test
 	test/pillar_state_test.cpp
 )
+
 target_link_libraries(pillar_state_test
+  pillar_state
   gtest_main
 )
+
 add_test(NAME pillar_state_test COMMAND pillar_state_test)
