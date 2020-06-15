@@ -3,7 +3,8 @@
 
 #include <iostream>
 
-#include "pillar_state/pillar_state.pb.h"
+// #include "pillar_state/pillar_state.pb.h"
+#include "pillar_state.pb.h" // TODO: scope this include pillar_state/
 
 // TODO: not sure to make this namespace Pillar
 namespace Pillar
@@ -22,7 +23,8 @@ public:
     return true;
   }
 private:
-  PillarMsg::Property property;
+  PillarMsg::Property property_;
+  PillarMsg::State state_;
 };
 
 } // Pillar
