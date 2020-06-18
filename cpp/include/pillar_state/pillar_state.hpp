@@ -3,8 +3,7 @@
 
 #include <iostream>
 
-// #include "pillar_state/pillar_state.pb.h"
-#include "pillar_state.pb.h" // TODO: scope this include pillar_state/
+#include "pillar_state/proto/pillar_state.pb.h"
 
 // TODO: not sure to make this namespace Pillar
 namespace Pillar

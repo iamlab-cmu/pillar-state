@@ -14,10 +14,11 @@ add_compile_options(-Wall -Wextra)
 
 # Dependencies ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(Protobuf REQUIRED)
-add_subdirectory(proto)
+#add_subdirectory(proto)
 
 # Library ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 add_library(pillar_state SHARED
+  include/pillar_state/proto/pillar_state.pb.cc # TODO: this should probably be moved out of the include
   src/pillar_state.cpp
 )
 
@@ -26,7 +27,7 @@ include_directories(${PROTOBUF_INCLUDE_DIR})
 include_directories(include)
 
 target_link_libraries(pillar_state PUBLIC
-  proto
+  #proto
   ${Protobuf_LIBRARIES}
 )
 
@@ -82,7 +83,7 @@ endif()
 
 # Now simply link against gtest or gtest_main as needed. Eg
 add_executable(pillar_state_test
-	test/pillar_state_test.cpp
+	../test/pillar_state_test.cpp
 )
 
 target_link_libraries(pillar_state_test

@@ -1,9 +1,16 @@
 # pillar-state
 
-#
-Do this to build (optional `-c | --clean`):
-`./make_pillar_state.sh [-c]`
+# cpp 
 
-#
+Do this to build (optional `-c | --clean`):
+
+`./make_scripts/make_proto_cpp.sh --clean`
+`./make_scripts/make_view_cpp.sh --clean`
+
 Run tests:
-`./build/pillar_state_test`
+
+`./cpp/build/pillar_state_test`
+
+# python
+
+TBD
