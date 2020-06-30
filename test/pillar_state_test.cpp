@@ -12,13 +12,13 @@ TEST(PillarState, Nominal)
 {
   Pillar::State state;
 
-  state.add_property("object0/scalar", 9.999);
-  state.add_property("object1/array", {1.111, 2.222, 3.333});
-  state.add_property("object1/scalar", 4.444);
-  state.add_property("object2/prop0/scalar", -22.222);
-  state.add_property("object2/prop0/array", {-8.888, 9.999});
-  state.add_property("object2/prop1/scalar", 7.777);
-  state.add_property("object2/prop2/array", {123.123});
+  state.update_property("object0/scalar", 9.999);
+  state.update_property("object1/array", {1.111, 2.222, 3.333});
+  state.update_property("object1/scalar", 4.444);
+  state.update_property("object2/prop0/scalar", -22.222);
+  state.update_property("object2/prop0/array", {-8.888, 9.999});
+  state.update_property("object2/prop1/scalar", 7.777);
+  state.update_property("object2/prop2/array", {123.123});
 
   std::cout << "What does it look like to print out state? " << std::endl;
   std::cout << state << std::endl;
@@ -44,7 +44,7 @@ TEST(PillarState, PrintEmpty)
   std::cout << state << std::endl;
 
   PillarMsg::Property prop;
-  state.add_property("empty_property", prop);
+  state.update_property("empty_property", prop);
 
   std::cout << "What does it look like to print an empty state property?" << std::endl;
   std::cout << state << std::endl;
@@ -56,8 +56,8 @@ TEST(PillarState, Variance)
 {
   Pillar::State state;
 
-  state.add_property("object0/scalar", 1.111, 0.555);
-  state.add_property("object0/array", {1.111, 2.222}, {0.111, 0.222, 0.333, 0.444});
+  state.update_property("object0/scalar", 1.111, 0.555);
+  state.update_property("object0/array", {1.111, 2.222}, {0.111, 0.222, 0.333, 0.444});
 
   std::cout << state << std::endl;
 }

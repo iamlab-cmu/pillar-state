@@ -15,43 +15,41 @@ public:
   State() { }
 
   // General version with a property
-  void add_property(const std::string& property_name, const PillarMsg::Property& property)
+  void update_property(const std::string& property_name, const PillarMsg::Property& property)
   {
-    //(*state_)[property_name] = property;
-    //state_.properties[property_name] = property;
     (*state_.mutable_properties())[property_name] = property;
   }
 
   // Scalar version
-  void add_property(const std::string& property_name, double value)
+  void update_property(const std::string& property_name, double value)
   {
     PillarMsg::Property property;
     property.add_value(value);
-    add_property(property_name, property);
+    update_property(property_name, property);
   }
-  void add_property(const std::string& property_name, double value, double variance)
+  void update_property(const std::string& property_name, double value, double variance)
   {
     PillarMsg::Property property;
     property.add_value(value);
     property.add_variance(variance);
-    add_property(property_name, property);
+    update_property(property_name, property);
   }
 
   // Array version
-  void add_property(const std::string& property_name, const std::vector<double>& values)
+  void update_property(const std::string& property_name, const std::vector<double>& values)
   {
     // create a property
     PillarMsg::Property property;
     *property.mutable_value() = {values.cbegin(), values.cend()};
-    add_property(property_name, property);
+    update_property(property_name, property);
   }
-  void add_property(const std::string& property_name, const std::vector<double>& values, const std::vector<double>& variances)
+  void update_property(const std::string& property_name, const std::vector<double>& values, const std::vector<double>& variances)
   {
     // create a property
     PillarMsg::Property property;
     *property.mutable_value() = {values.cbegin(), values.cend()};
     *property.mutable_variance() = {variances.cbegin(), variances.cend()};
-    add_property(property_name, property);
+    update_property(property_name, property);
   }
 
   // Returns the *number of state properties*
