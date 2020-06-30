@@ -13,19 +13,47 @@ class State
 {
 public:
   State() { }
+
+  // General version with a property
   void add_property(const std::string& property_name, const PillarMsg::Property& property)
   {
     //(*state_)[property_name] = property;
     //state_.properties[property_name] = property;
     (*state_.mutable_properties())[property_name] = property;
   }
+
+  // Scalar version
   void add_property(const std::string& property_name, double value)
   {
-    // scalar version
     PillarMsg::Property property;
     property.add_value(value);
     add_property(property_name, property);
   }
+  void add_property(const std::string& property_name, double value, double variance)
+  {
+    PillarMsg::Property property;
+    property.add_value(value);
+    property.add_variance(variance);
+    add_property(property_name, property);
+  }
+
+  // Array version
+  void add_property(const std::string& property_name, const std::vector<double>& values)
+  {
+    // create a property
+    PillarMsg::Property property;
+    *property.mutable_value() = {values.cbegin(), values.cend()};
+    add_property(property_name, property);
+  }
+  void add_property(const std::string& property_name, const std::vector<double>& values, const std::vector<double>& variances)
+  {
+    // create a property
+    PillarMsg::Property property;
+    *property.mutable_value() = {values.cbegin(), values.cend()};
+    *property.mutable_variance() = {variances.cbegin(), variances.cend()};
+    add_property(property_name, property);
+  }
+
   // Returns the *number of state properties*
   int num_properties() const
   {
@@ -49,6 +77,7 @@ public:
   {
     return num_dimensions();
   }
+
   std::ostream& print(std::ostream& os) const
   {
     // Iterate through all the property keys
@@ -58,17 +87,55 @@ public:
       {
         os << p.first << ":" << std::endl;
 
-        if (p.second.value_size() > 0)
+        // Print values
+        os << " -> val: ";
+        const auto this_prop_value_size = p.second.value_size();
+        if (this_prop_value_size > 0)
         {
-          for (const auto &v : p.second.value())
+          os << "[ ";
+          for (auto n = 0; n < this_prop_value_size; ++n)
           {
-            os << " -> " << v << std::endl;
+            os << p.second.value(n);
+            if ((n + 1) == this_prop_value_size)
+            {
+              os << " ]";
+            }
+            else
+            {
+              os << ", ";
+            }
           }
         }
         else
         {
-          os << " -> n/a" << std::endl;
+          os << "n/a";
         }
+        os << std::endl;
+
+        // Print variance
+        os << " -> var: ";
+        const auto this_prop_var_size = p.second.variance_size();
+        if (this_prop_var_size > 0)
+        {
+          os << "[ ";
+          for (auto n = 0; n < this_prop_var_size; ++n)
+          {
+            os << p.second.variance(n);
+            if ((n + 1) == this_prop_var_size)
+            {
+              os << " ]";
+            }
+            else
+            {
+              os << ", ";
+            }
+          }
+        }
+        else
+        {
+          os << "n/a";
+        }
+        os << std::endl;
       }
     }
     else
@@ -78,6 +145,7 @@ public:
 
     return os;
   }
+
 private:
   PillarMsg::State state_;
 };

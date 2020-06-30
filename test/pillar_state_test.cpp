@@ -12,22 +12,13 @@ TEST(PillarState, Nominal)
 {
   Pillar::State state;
 
-  PillarMsg::Property obj1_property;
-  obj1_property.add_value(1.111);
-  obj1_property.add_value(2.222);
-  obj1_property.add_value(3.333);
-  PillarMsg::Property obj2_property;
-  obj2_property.add_value(-8.888);
-  obj2_property.add_value(9.999);
-  PillarMsg::Property obj2_property_scalar_array;
-  obj2_property_scalar_array.add_value(123.123);
   state.add_property("object0/scalar", 9.999);
-  state.add_property("object1/array", obj1_property);
+  state.add_property("object1/array", {1.111, 2.222, 3.333});
   state.add_property("object1/scalar", 4.444);
   state.add_property("object2/prop0/scalar", -22.222);
-  state.add_property("object2/prop0/array", obj2_property);
+  state.add_property("object2/prop0/array", {-8.888, 9.999});
   state.add_property("object2/prop1/scalar", 7.777);
-  state.add_property("object2/prop2/array", obj2_property_scalar_array);
+  state.add_property("object2/prop2/array", {123.123});
 
   std::cout << "What does it look like to print out state? " << std::endl;
   std::cout << state << std::endl;
@@ -59,4 +50,14 @@ TEST(PillarState, PrintEmpty)
   std::cout << state << std::endl;
 
   EXPECT_TRUE(true);
+}
+
+TEST(PillarState, Variance)
+{
+  Pillar::State state;
+
+  state.add_property("object0/scalar", 1.111, 0.555);
+  state.add_property("object0/array", {1.111, 2.222}, {0.111, 0.222, 0.333, 0.444});
+
+  std::cout << state << std::endl;
 }
