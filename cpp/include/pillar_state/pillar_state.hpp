@@ -44,14 +44,68 @@ public:
     property.add_value(value);
     add_property(property_name, property);
   }
+  // Returns the *number of state properties*
   int num_properties() const
   {
     return state_.properties().size();
+  }
+  // Returns the *number of state elements*
+  int num_dimensions() const
+  {
+    int num_dimensions = 0;
+
+    for (auto it = state_.properties().cbegin(); it != state_.properties().cend(); ++it)
+    {
+      num_dimensions += it->second.value_size();
+    }
+
+    return num_dimensions;
+  }
+  // Wrapper for num_dimensions -- although this is DIFFERENT than the size of the map
+  // So perhaps size() here could be misleading
+  int size() const
+  {
+    return num_dimensions();
+  }
+  std::ostream& print(std::ostream& os) const
+  {
+    // Iterate through all the property keys
+    if (num_properties() > 0)
+    {
+      for (const auto& p : state_.properties())
+      {
+        os << p.first << ":" << std::endl;
+
+        if (p.second.value_size() > 0)
+        {
+          for (const auto &v : p.second.value())
+          {
+            os << " -> " << v << std::endl;
+          }
+        }
+        else
+        {
+          os << " -> n/a" << std::endl;
+        }
+      }
+    }
+    else
+    {
+      os << "n/a" << std::endl;
+    }
+
+    // return os << "hay\n";
+    return os;
   }
 private:
   PillarMsg::Property property_;
   PillarMsg::State state_;
 };
+
+std::ostream& operator<<(std::ostream& os, const State& state)
+{
+  return state.print(os);
+}
 
 } // Pillar
 
