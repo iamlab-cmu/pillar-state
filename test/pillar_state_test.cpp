@@ -10,6 +10,8 @@
 
 TEST(PillarState, Nominal)
 {
+  Pillar::State state;
+
   PillarMsg::Property obj1_property;
   obj1_property.add_value(1.111);
   obj1_property.add_value(2.222);
