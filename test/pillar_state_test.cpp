@@ -36,6 +36,18 @@ TEST(PillarState, Nominal)
   ASSERT_EQ(state.num_properties(), num_state_properties_gt);
   ASSERT_EQ(state.num_dimensions(), num_state_dimensions_gt);
   ASSERT_EQ(state.size(), num_state_dimensions_gt);
+
+  // Now clear the state
+  state.clear();
+
+  std::cout << "What happens after running clear()?" << std::endl;
+  std::cout << "state.num_properties(): " << state.num_properties() << std::endl;
+  std::cout << "state.num_dimensions(): " << state.num_dimensions() << std::endl;
+  std::cout << "state.size(): " << state.size() << std::endl;
+
+  ASSERT_EQ(state.num_properties(), 0);
+  ASSERT_EQ(state.num_dimensions(), 0);
+  ASSERT_EQ(state.size(), 0);
 }
 
 TEST(PillarState, PrintEmpty)

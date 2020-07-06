@@ -54,6 +54,12 @@ public:
     update_property(property_name, property);
   }
 
+  // Clears the state
+  void clear()
+  {
+    state_.mutable_properties()->clear();
+  }
+
   // Returns the *number of state properties*
   int num_properties() const
   {
