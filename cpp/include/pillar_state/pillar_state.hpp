@@ -2,6 +2,7 @@
 #define PILLAR_STATE_INCLUDE_PILLAR_STATE_HPP_
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "pillar_state/proto/pillar_state.pb.h"
