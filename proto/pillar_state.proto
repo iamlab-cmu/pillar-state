@@ -5,8 +5,8 @@ package PillarMsg;
 // Uses double precision
 
 message Property {
-    repeated double value = 1;
-    repeated double variance = 2;
+    repeated double values = 1;
+    repeated double variances = 2;
 }
 
 message State {

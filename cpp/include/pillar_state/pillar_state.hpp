@@ -26,14 +26,14 @@ public:
   void update_property(const std::string& property_name, double value)
   {
     PillarMsg::Property property;
-    property.add_value(value);
+    property.add_values(value);
     update_property(property_name, property);
   }
   void update_property(const std::string& property_name, double value, double variance)
   {
     PillarMsg::Property property;
-    property.add_value(value);
-    property.add_variance(variance);
+    property.add_values(value);
+    property.add_variances(variance);
     update_property(property_name, property);
   }
 
@@ -42,15 +42,15 @@ public:
   {
     // create a property
     PillarMsg::Property property;
-    *property.mutable_value() = {values.cbegin(), values.cend()};
+    *property.mutable_values() = {values.cbegin(), values.cend()};
     update_property(property_name, property);
   }
   void update_property(const std::string& property_name, const std::vector<double>& values, const std::vector<double>& variances)
   {
     // create a property
     PillarMsg::Property property;
-    *property.mutable_value() = {values.cbegin(), values.cend()};
-    *property.mutable_variance() = {variances.cbegin(), variances.cend()};
+    *property.mutable_values() = {values.cbegin(), values.cend()};
+    *property.mutable_variances() = {variances.cbegin(), variances.cend()};
     update_property(property_name, property);
   }
 
@@ -72,7 +72,7 @@ public:
 
     for (auto it = state_.properties().cbegin(); it != state_.properties().cend(); ++it)
     {
-      num_dimensions += it->second.value_size();
+      num_dimensions += it->second.values_size();
     }
 
     return num_dimensions;
@@ -91,17 +91,30 @@ public:
     {
       for (const auto& p : state_.properties())
       {
-        os << p.first << ":" << std::endl;
+        os << p.first << ":";
+
+        const auto this_prop_value_size = p.second.values_size();
+        const auto this_prop_var_size = p.second.variances_size();
+
+        // If there isn't anything meaningful to print, just print n/a and skip
+        if (this_prop_value_size == 0 && this_prop_var_size == 0)
+        {
+          os << " n/a" << std::endl;
+          continue;
+        }
+        else
+        {
+          os << std::endl;
+        }
 
         // Print values
-        os << " -> val: ";
-        const auto this_prop_value_size = p.second.value_size();
         if (this_prop_value_size > 0)
         {
-          os << "[ ";
+          os << " -> val: [ ";
+
           for (auto n = 0; n < this_prop_value_size; ++n)
           {
-            os << p.second.value(n);
+            os << p.second.values(n);
             if ((n + 1) == this_prop_value_size)
             {
               os << " ]";
@@ -111,22 +124,16 @@ public:
               os << ", ";
             }
           }
+          os << std::endl;
         }
-        else
-        {
-          os << "n/a";
-        }
-        os << std::endl;
 
         // Print variance
-        os << " -> var: ";
-        const auto this_prop_var_size = p.second.variance_size();
         if (this_prop_var_size > 0)
         {
-          os << "[ ";
+          os << " -> var: [ ";
           for (auto n = 0; n < this_prop_var_size; ++n)
           {
-            os << p.second.variance(n);
+            os << p.second.variances(n);
             if ((n + 1) == this_prop_var_size)
             {
               os << " ]";
@@ -136,12 +143,8 @@ public:
               os << ", ";
             }
           }
+          os << std::endl;
         }
-        else
-        {
-          os << "n/a";
-        }
-        os << std::endl;
       }
     }
     else
