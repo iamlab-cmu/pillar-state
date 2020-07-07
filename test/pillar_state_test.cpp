@@ -75,8 +75,14 @@ TEST(PillarState, Variance)
 TEST(PillarState, StateFromYamlFile)
 {
   // TODO: don't hardcode path of this file
-  const std::string yaml_path = "/home/telee/ws/pillar-state/test/env_3room_state.yaml";
-  Pillar::State state(yaml_path);
+  const std::string pillar_env_yaml_path = "/home/telee/ws/pillar-state/test/env_3room_state.yaml";
+  std::cout << "Reading in: " << pillar_env_yaml_path << std::endl;
+  Pillar::State state(pillar_env_yaml_path);
+  std::cout << state << std::endl;
+
+  const std::string door_yaml_path = "/home/telee/ws/pillar-state/test/door_state.yaml";
+  std::cout << "Reading in: " << door_yaml_path << std::endl;
+  state.load_from_yaml_file(door_yaml_path);
   std::cout << state << std::endl;
 
   EXPECT_TRUE(true);
