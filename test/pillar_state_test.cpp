@@ -1,15 +1,10 @@
 #include <string>
 #include <vector>
 
-// #include <Eigen/Dense>
 #include "gtest/gtest.h"
 
 #include "pillar_state/pillar_state.hpp"
-
 #include "pillar_state/proto/pillar_state.pb.h"
-
-// using namespace pillar_state;
-// using namespace Eigen;
 
 TEST(PillarState, Nominal)
 {
@@ -75,4 +70,14 @@ TEST(PillarState, Variance)
   state.update_property("object0/array", {1.111, 2.222}, {0.111, 0.222, 0.333, 0.444});
 
   std::cout << state << std::endl;
+}
+
+TEST(PillarState, StateFromYamlFile)
+{
+  // TODO: don't hardcode path of this file
+  const std::string yaml_path = "/home/telee/ws/pillar-state/test/env_3room_state.yaml";
+  Pillar::State state(yaml_path);
+  std::cout << state << std::endl;
+
+  EXPECT_TRUE(true);
 }

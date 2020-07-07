@@ -29,6 +29,7 @@ include_directories(include)
 target_link_libraries(pillar_state PUBLIC
   #proto
   ${Protobuf_LIBRARIES}
+  yaml-cpp # TODO: add library this before
 )
 
 target_include_directories(pillar_state PUBLIC
