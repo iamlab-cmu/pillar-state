@@ -39,3 +39,10 @@ state:
   - desk:color:
     - values: [0., 0., 0.]
       value_names: ['r', 'g', 'b']
+# properties that don't have literal namespacing
+  - calibration_array:
+    - values: [1.1, -2.2, 3.3]
+  - constants/gravity_accel_const:
+    - values: 9.80665
+  - constants/pi:
+    - values: 3.14159
