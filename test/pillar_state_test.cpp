@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -86,4 +87,40 @@ TEST(PillarState, StateFromYamlFile)
   std::cout << state << std::endl;
 
   EXPECT_TRUE(true);
+}
+
+TEST(PillarState, LiteralsAndNodes)
+{
+  // TODO: don't hardcode path of this file
+  const std::string door_yaml_path = "/home/telee/ws/pillar-state/test/door_state.yaml";
+  Pillar::State state(door_yaml_path);
+
+  const std::vector<std::string> literal_names_abc_gt = {"desk","frame","frame:door","frame:door:handle"};
+  const auto literal_names = state.literals();
+
+  // Copy and sort
+  std::vector<std::string> literal_names_abc(literal_names.begin(), literal_names.end());
+  std::sort(literal_names_abc.begin(), literal_names_abc.end());
+
+  std::cout << "State literals:" << std::endl;
+  for (const auto n : literal_names_abc)
+  {
+    std::cout << " -> " << n << std::endl;
+  }
+  EXPECT_EQ(literal_names_abc, literal_names_abc_gt);
+
+  // Root nodes
+  const std::vector<std::string> root_nodes_abc_gt = {"calibration_array", "constants", "desk", "frame"};
+  const auto root_nodes = state.root_nodes();
+
+  // Copy and sort
+  std::vector<std::string> root_nodes_abc(root_nodes.begin(), root_nodes.end());
+  std::sort(root_nodes_abc.begin(), root_nodes_abc.end());
+
+  std::cout << "Root nodes:" << std::endl;
+  for (const auto n : root_nodes_abc)
+  {
+    std::cout << " -> " << n << std::endl;
+  }
+  EXPECT_EQ(root_nodes_abc, root_nodes_abc_gt);
 }
