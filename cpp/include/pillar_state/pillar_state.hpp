@@ -33,6 +33,11 @@ public:
     return fq_name;
   }
 
+  std::string name() const
+  {
+    return name_;
+  }
+
   std::string fq_parent_name() const
   {
     return fq_parent_namespace_;
@@ -57,6 +62,11 @@ public:
   {
     // unordered_set will ensure that no duplicates occur
     child_namespaces_.insert(child_namespace);
+  }
+
+  std::unordered_set<std::string> child_namespaces() const
+  {
+    return child_namespaces_;
   }
 
 private:
@@ -409,9 +419,78 @@ public:
     return success;
   }
 
-  std::ostream& print(std::ostream& os) const
+  std::ostream& print(std::ostream& os, int format=1) const
   {
-    // TODO: allow for different print structures
+    if (format == 0)
+    {
+      return print_as_property_list(os);
+    }
+    else if (format == 1)
+    {
+      return print_as_state_tree(os);
+    }
+    else
+    {
+      // TODO: warning? error?
+    }
+    return os;
+  }
+
+  // Low-level printer for values of a property. Does not include new lines.
+  std::ostream& print_property_values(std::ostream& os, const PillarMsg::Property& property) const
+  {
+    const auto prop_value_size = property.values_size();
+    const auto prop_value_name_size = property.value_names_size();
+    const bool named_values = (prop_value_size == prop_value_name_size) ? true : false;
+
+    os << " -> val: [ ";
+
+    for (auto n = 0; n < prop_value_size; ++n)
+    {
+      if (named_values)
+      {
+        os << "\'" << property.value_names(n) << "\': ";
+      }
+
+      os << property.values(n);
+      if ((n + 1) == prop_value_size)
+      {
+        os << " ]";
+      }
+      else
+      {
+        os << ", ";
+      }
+    }
+
+    return os;
+  }
+
+  // Low-level printer for variance of a property. Does not include new lines.
+  std::ostream& print_property_variances(std::ostream& os, const PillarMsg::Property& property) const
+  {
+    const auto prop_var_size = property.variances_size();
+
+    os << " -> var: [ ";
+
+    for (auto n = 0; n < prop_var_size; ++n)
+    {
+      os << property.variances(n);
+      if ((n + 1) == prop_var_size)
+      {
+        os << " ]";
+      }
+      else
+      {
+        os << ", ";
+      }
+    }
+
+    return os;
+  }
+
+  std::ostream& print_as_property_list(std::ostream& os) const
+  {
     // This format will iterate through all the properties
     if (num_properties() > 0)
     {
@@ -419,8 +498,9 @@ public:
       {
         os << p.first << ":";
 
-        const auto this_prop_value_size = p.second.values_size();
-        const auto this_prop_var_size = p.second.variances_size();
+        const auto this_prop = p.second;
+        const auto this_prop_value_size = this_prop.values_size();
+        const auto this_prop_var_size = this_prop.variances_size();
 
         // If there isn't anything meaningful to print, just print n/a and skip
         if (this_prop_value_size == 0 && this_prop_var_size == 0)
@@ -436,47 +516,14 @@ public:
         // Print values
         if (this_prop_value_size > 0)
         {
-          os << " -> val: [ ";
-
-          const auto this_prop_value_name_size = p.second.value_names_size();
-          bool named_values = (this_prop_value_size == this_prop_value_name_size) ? true : false;
-
-          for (auto n = 0; n < this_prop_value_size; ++n)
-          {
-            if (named_values)
-            {
-              os << "\'" << p.second.value_names(n) << "\': ";
-            }
-
-            os << p.second.values(n);
-            if ((n + 1) == this_prop_value_size)
-            {
-              os << " ]";
-            }
-            else
-            {
-              os << ", ";
-            }
-          }
+          print_property_values(os, this_prop);
           os << std::endl;
         }
 
         // Print variance
         if (this_prop_var_size > 0)
         {
-          os << " -> var: [ ";
-          for (auto n = 0; n < this_prop_var_size; ++n)
-          {
-            os << p.second.variances(n);
-            if ((n + 1) == this_prop_var_size)
-            {
-              os << " ]";
-            }
-            else
-            {
-              os << ", ";
-            }
-          }
+          print_property_variances(os, this_prop);
           os << std::endl;
         }
       }
@@ -484,6 +531,80 @@ public:
     else
     {
       os << "n/a" << std::endl;
+    }
+
+    return os;
+  }
+
+  // This format will print things as a tree
+  std::ostream& print_as_state_tree(std::ostream& os) const
+  {
+    if (num_properties() > 0)
+    {
+      for (const auto& r : root_node_names_)
+      {
+        print_state_tree_from_node(os, r, 0);
+      }
+    }
+    else
+    {
+      os << "n/a" << std::endl;
+    }
+
+    return os;
+  }
+
+  std::ostream& print_state_tree_from_node(std::ostream& os, const std::string& fqnode, int depth) const
+  {
+    if (namespace_map_from_fqname_.count(fqnode) == 0)
+    {
+      return os;
+    }
+
+    const auto state_node = namespace_map_from_fqname_.at(fqnode);
+    const std::string spaces = std::string(3*depth, ' ');
+
+    const auto delim = (state_node.is_literal()) ? ":" : "/";
+    const auto literal_mark = (state_node.is_literal()) ? "*" : "";
+
+    os << spaces << state_node.name() << literal_mark << std::endl;
+
+    if (state_node.is_property())
+    {
+      const auto this_prop = state_.properties().at(fqnode);
+      const auto this_prop_value_size = this_prop.values_size();
+      const auto this_prop_var_size = this_prop.variances_size();
+
+      if (this_prop_value_size || this_prop_var_size)
+      {
+        // Print values
+        if (this_prop_value_size > 0)
+        {
+          os << spaces;
+          print_property_values(os, this_prop);
+          os << std::endl;
+        }
+
+        // Print variance
+        if (this_prop_var_size > 0)
+        {
+          os << spaces;
+          print_property_variances(os, this_prop);
+          os << std::endl;
+        }
+      }
+      else
+      {
+        // If there isn't anything meaningful to print, just print n/a and skip
+        os << spaces << " n/a" << std::endl;
+      }
+    }
+
+    for (const auto& child_node : state_node.child_namespaces())
+    {
+      // form fully qualified child
+      const auto fqchild = fqnode + delim + child_node;
+      print_state_tree_from_node(os, fqchild, depth + 1);
     }
 
     return os;
