@@ -123,4 +123,22 @@ TEST(PillarState, LiteralsAndNodes)
     std::cout << " -> " << n << std::endl;
   }
   EXPECT_EQ(root_nodes_abc, root_nodes_abc_gt);
+
+  // Get property names of a single literal
+  // Note that this should NOT return any properties from any child literals
+  const std::vector<std::string> frame_door_literal_props_abc_gt = {
+    "frame:door:color",
+    "frame:door:pose/position",
+    "frame:door:pose/quaternion"
+    };
+  const auto frame_door_literal_props = state.literal_properties("frame:door");
+  std::vector<std::string> frame_door_literal_props_abc(frame_door_literal_props.begin(), frame_door_literal_props.end());
+  std::sort(frame_door_literal_props_abc.begin(), frame_door_literal_props_abc.end());
+
+  std::cout << "Properties of literal frame:door:" << std::endl;
+  for (const auto n : frame_door_literal_props_abc)
+  {
+    std::cout << " -> " << n << std::endl;
+  }
+  EXPECT_EQ(frame_door_literal_props_abc, frame_door_literal_props_abc_gt);
 }

@@ -199,6 +199,51 @@ public:
     return literal_fqnames_;
   }
 
+  // TODO: consider whether to call this "literal_property_names"
+  std::unordered_set<std::string> literal_properties(const std::string& literal) const
+  {
+    const auto it = literal_fqnames_.find(literal);
+    std::unordered_set<std::string> literal_prop_names;
+    if (it != literal_fqnames_.cend())
+    {
+      literal_prop_names = properties_from_node(literal);
+    }
+
+    return literal_prop_names;
+  }
+
+  // TODO: change name. low-level function. HAS NO ERROR CHECKING.
+  std::unordered_set<std::string> properties_from_node(const std::string& node, bool follow_literals = false) const
+  {
+    std::unordered_set<std::string> node_properties_found;
+    const auto ref = namespace_map_from_fqname_.at(node);
+    if (ref.is_property())
+    {
+      node_properties_found.insert(node);
+    }
+    else
+    {
+      const auto delim = (ref.is_literal()) ? ":" : "/";
+      for (const auto& child_node : ref.child_namespaces())
+      {
+        const auto fqchild = node + delim + child_node;
+        // const auto is_child_literal = namespace_map_from_fqname_.at(fqchild).is_literal();
+        const bool follow_node = (follow_literals) ? true : !namespace_map_from_fqname_.at(fqchild).is_literal();
+        // if (follow_literals || !is_child_literal)
+        if (follow_node)
+        {
+          const auto out = properties_from_node(fqchild);
+          for (const auto& m : out)
+          {
+            node_properties_found.insert(m);
+          }
+        }
+      }
+    }
+
+    return node_properties_found;
+  }
+
   // Return the names of the top-level nodes
   std::unordered_set<std::string> root_nodes() const
   {
