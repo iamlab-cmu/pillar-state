@@ -28,9 +28,14 @@ include_directories(include)
 
 target_link_libraries(pillar_state PUBLIC
   #proto
-  ${Protobuf_LIBRARIES}
-  yaml-cpp # TODO: add library this before
+  #${Protobuf_LIBRARIES}
+  yaml-cpp # TODO: add_library this before?
 )
+
+# Note line below is needed if for cmake below 3.6
+# previously, you could link to ${Protobuf_LIBRARIES} and call it a day
+# https://stackoverflow.com/questions/41043184/cmake-doesnt-work-with-google-protobuf
+target_link_libraries(pillar_state INTERFACE ${PROTOBUF_LIBRARIES})
 
 target_include_directories(pillar_state PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
