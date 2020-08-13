@@ -290,7 +290,7 @@ public:
     return true;
   }
 
-  std::string serialize()
+  std::string serialize() const
   {
     std::string ser;
     if (!state_.SerializeToString(&ser))
