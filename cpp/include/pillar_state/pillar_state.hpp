@@ -81,16 +81,25 @@ class State
 {
 public:
   State() { }
-  State(const std::string& yaml_path)
-  {
-    bool success = load_from_yaml_file(yaml_path);
 
-    // Loading in a ctor requires us to throw because we don't want an "is valid" member field
-    // This is because the ctor can't return the outcome of load_from_yaml_file
-    if (!success)
+  static State create_from_yaml_file(const std::string& yaml_path)
+  {
+    State s;
+    if (!s.load_from_yaml_file(yaml_path))
     {
       throw std::runtime_error("Could not initialize from YAML file: " + yaml_path);
     }
+    return s;
+  }
+
+  static State create_from_seralized_string(const std::string& ser)
+  {
+    State s;
+    if (!s.load_from_serialized_string(ser))
+    {
+      throw std::runtime_error("Could not initialize from serialized string!");
+    }
+    return s;
   }
 
   // General version with a property
@@ -263,8 +272,7 @@ public:
   bool load_from_yaml_file(const std::string& yaml_path)
   {
     clear();
-    const bool yaml_file_update_successful = update_from_yaml_file(yaml_path);
-    if (!yaml_file_update_successful)
+    if (!update_from_yaml_file(yaml_path))
     {
       // Clear so we don't end up in a weird intermediate state
       clear();
@@ -272,8 +280,36 @@ public:
     }
 
     // Rebuild search tree
-    const bool namespace_tree_build_successful = build_state_tree();
-    if (!namespace_tree_build_successful)
+    if (!build_state_tree())
+    {
+      // Clear so we don't end up in a weird intermediate state
+      clear();
+      return false;
+    }
+
+    return true;
+  }
+
+  std::string serialize() const
+  {
+    std::string ser;
+    if (!state_.SerializeToString(&ser))
+    {
+      throw std::runtime_error("Could not serialize to string!");
+    }
+    return ser;
+  }
+
+  bool load_from_serialized_string(const std::string& ser)
+  {
+    clear();
+    if (!state_.ParseFromString(ser))
+    {
+      clear();
+      return false;
+    }
+
+    if (!build_state_tree())
     {
       // Clear so we don't end up in a weird intermediate state
       clear();
@@ -668,6 +704,7 @@ private:
   // This is a handy set of all root nodes
   std::unordered_set<std::string> root_node_names_;
 };
+
 
 std::ostream& operator<<(std::ostream& os, const State& state)
 {

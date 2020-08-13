@@ -75,13 +75,12 @@ TEST(PillarState, Variance)
 
 TEST(PillarState, StateFromYamlFile)
 {
-  // TODO: don't hardcode path of this file
-  const std::string pillar_env_yaml_path = "/home/telee/ws/pillar-state/test/env_3room_state.yaml";
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
   std::cout << "Reading in: " << pillar_env_yaml_path << std::endl;
-  Pillar::State state(pillar_env_yaml_path);
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
   std::cout << state << std::endl;
 
-  const std::string door_yaml_path = "/home/telee/ws/pillar-state/test/door_state.yaml";
+  const std::string door_yaml_path = "test/door_state.yaml";
   std::cout << "Reading in: " << door_yaml_path << std::endl;
   state.load_from_yaml_file(door_yaml_path);
   std::cout << state << std::endl;
@@ -91,9 +90,8 @@ TEST(PillarState, StateFromYamlFile)
 
 TEST(PillarState, LiteralsAndNodes)
 {
-  // TODO: don't hardcode path of this file
-  const std::string door_yaml_path = "/home/telee/ws/pillar-state/test/door_state.yaml";
-  Pillar::State state(door_yaml_path);
+  const std::string door_yaml_path = "test/door_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(door_yaml_path);
 
   const std::vector<std::string> literal_names_abc_gt = {"desk","frame","frame:door","frame:door:handle"};
   const auto literal_names = state.literals();
@@ -141,4 +139,16 @@ TEST(PillarState, LiteralsAndNodes)
     std::cout << " -> " << n << std::endl;
   }
   EXPECT_EQ(frame_door_literal_props_abc, frame_door_literal_props_abc_gt);
+}
+
+TEST(PillarState, SerializeAndDeserialize)
+{
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+
+  std::string ser = state.serialize();
+  Pillar::State new_state = Pillar::State::create_from_seralized_string(ser);
+
+  EXPECT_EQ(state.num_properties(), new_state.num_properties());
+  EXPECT_EQ(state.num_dimensions(), new_state.num_dimensions());
 }
