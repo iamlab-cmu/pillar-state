@@ -208,21 +208,20 @@ public:
     return literal_fqnames_;
   }
 
-  // TODO: consider whether to call this "literal_property_names"
-  std::unordered_set<std::string> literal_properties(const std::string& literal) const
+  std::unordered_set<std::string> get_literal_prop_names(const std::string& literal) const
   {
     const auto it = literal_fqnames_.find(literal);
     std::unordered_set<std::string> literal_prop_names;
     if (it != literal_fqnames_.cend())
     {
-      literal_prop_names = properties_from_node(literal);
+      literal_prop_names = get_literal_props_from_node(literal);
     }
 
     return literal_prop_names;
   }
 
   // TODO: change name. low-level function. HAS NO ERROR CHECKING.
-  std::unordered_set<std::string> properties_from_node(const std::string& node, bool follow_literals = false) const
+  std::unordered_set<std::string> get_literal_props_from_node(const std::string& node, bool follow_literals = false) const
   {
     std::unordered_set<std::string> node_properties_found;
     const auto ref = namespace_map_from_fqname_.at(node);
@@ -241,7 +240,7 @@ public:
         // if (follow_literals || !is_child_literal)
         if (follow_node)
         {
-          const auto out = properties_from_node(fqchild);
+          const auto out = get_literal_props_from_node(fqchild);
           for (const auto& m : out)
           {
             node_properties_found.insert(m);
@@ -259,14 +258,105 @@ public:
     return root_node_names_;
   }
 
-  // TODO: write later
-  bool save_to_yaml_file(const std::string& yaml_path, bool force_overwrite = false)
+  std::unordered_set<std::string> get_all_prop_names() const
   {
-    // Attempt to open file for writing
-
-    // Emit to YAML
-    return false;
+    std::unordered_set<std::string> all_prop_names;
+    for (auto& key : state_.properties())
+    {
+      all_prop_names.insert(key.first);
+    }
+    return all_prop_names;
   }
+
+  int get_prop_size(const std::string prop_name) const
+  {
+    auto props = state_.properties();
+    return props[prop_name].values_size();
+  }
+
+  std::unordered_map<std::string, int> get_prop_sizes(const std::vector<std::string> prop_names) const
+  {
+    std::unordered_map<std::string, int> prop_sizes;
+    for (auto& prop_name : prop_names)
+    {
+      prop_sizes[prop_name] = get_prop_size(prop_name);
+    }
+    return prop_sizes;
+  }
+
+  std::unordered_map<std::string, std::pair<int, int>> get_flattened_idxs(const std::vector<std::string> prop_names) const
+  {
+    auto prop_sizes = get_prop_sizes(prop_names);
+
+    std::unordered_map<std::string, std::pair<int, int>> idxs;
+    int start_idx = 0;
+    int end_idx = 0;
+    for (auto& prop_name : prop_names)
+    {
+      end_idx = start_idx + prop_sizes[prop_name];
+      idxs[prop_name] = std::make_pair(start_idx, end_idx);
+      start_idx = end_idx;
+    }
+
+    return idxs;
+  }
+
+  std::vector<double> get_flattened_values(const std::vector<std::string> prop_names) const
+  {
+    int total_size = 0;
+    for (const auto& prop_name : prop_names)
+    {
+      total_size += get_prop_size(prop_name);
+    }
+    std::vector<double> flattened_values;
+    flattened_values.resize(total_size, 0.);
+
+    auto props = state_.properties();
+    int offset = 0;
+    for (const auto& prop_name : prop_names)
+    {
+      auto values = props[prop_name].values();
+      std::copy(values.begin(), values.end(), flattened_values.begin() + offset);
+      offset += values.size();
+    }
+
+    return flattened_values;
+  }
+
+  std::vector<std::string> get_flattened_value_names(const std::vector<std::string> prop_names) const
+  {
+    int total_size = 0;
+    for (const auto& prop_name : prop_names)
+    {
+      total_size += get_prop_size(prop_name);
+    }
+    std::vector<std::string> flattened_value_names;
+    flattened_value_names.resize(total_size, "");
+
+    auto props = state_.properties();
+    int offset = 0;
+    for (const auto& prop_name : prop_names)
+    {
+      auto value_names = props[prop_name].value_names();
+      auto values_size = props[prop_name].values().size();
+      if (value_names.size() == values_size)
+      {
+        std::copy(value_names.begin(), value_names.end(), flattened_value_names.begin() + offset);
+      }
+      offset += values_size;
+    } 
+
+    return flattened_value_names;
+  }
+
+  // TODO: write later
+  // bool save_to_yaml_file(const std::string& yaml_path, bool force_overwrite = false)
+  // {
+  //   // Attempt to open file for writing
+
+  //   // Emit to YAML
+  //   return false;
+  // }
 
   // Clears the state and loads file
   bool load_from_yaml_file(const std::string& yaml_path)
@@ -290,7 +380,7 @@ public:
     return true;
   }
 
-  std::string serialize()
+  std::string get_serialized_string()
   {
     std::string ser;
     if (!state_.SerializeToString(&ser))
