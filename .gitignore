@@ -32,6 +32,7 @@
 *.app
 
 cpp/build
+cpp/include/pillar_state/proto
 
 .vscode
 
