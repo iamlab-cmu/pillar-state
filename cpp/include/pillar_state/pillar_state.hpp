@@ -301,15 +301,20 @@ public:
     return idxs;
   }
 
-  std::vector<double> get_flattened_values(const std::vector<std::string> prop_names) const
+  int get_total_prop_sizes(const std::vector<std::string> prop_names) const
   {
     int total_size = 0;
     for (const auto& prop_name : prop_names)
     {
       total_size += get_prop_size(prop_name);
     }
+    return total_size;
+  }
+
+  std::vector<double> get_flattened_values(const std::vector<std::string> prop_names) const
+  {
     std::vector<double> flattened_values;
-    flattened_values.resize(total_size, 0.);
+    flattened_values.resize(get_total_prop_sizes(prop_names), 0.);
 
     auto props = state_.properties();
     int offset = 0;
@@ -325,13 +330,8 @@ public:
 
   std::vector<std::string> get_flattened_value_names(const std::vector<std::string> prop_names) const
   {
-    int total_size = 0;
-    for (const auto& prop_name : prop_names)
-    {
-      total_size += get_prop_size(prop_name);
-    }
     std::vector<std::string> flattened_value_names;
-    flattened_value_names.resize(total_size, "");
+    flattened_value_names.resize(get_total_prop_sizes(prop_names), "");
 
     auto props = state_.properties();
     int offset = 0;
@@ -347,6 +347,21 @@ public:
     } 
 
     return flattened_value_names;
+  }
+
+  bool set_flattened_values(const std::vector<std::string> prop_names, const std::vector<double> values)
+  {
+    if (get_total_prop_sizes(prop_names) != values.size())
+    {
+      return false;
+    }
+
+    auto prop_idxs = get_flattened_idxs(prop_names);
+    for (const auto& prop_name : prop_names)
+    {
+      auto idxs = prop_idxs[prop_name];
+      update_property(prop_name, {values.begin() + idxs.first, values.begin() + idxs.second});
+    }
   }
 
   // TODO: write later

@@ -154,7 +154,7 @@ TEST(PillarState, SerializeAndDeserialize)
 }
 
 
-TEST(PillarState, FlattenedValueRetrieval)
+TEST(PillarState, ReadFlattenedValues)
 {
   const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
   Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
@@ -190,4 +190,28 @@ TEST(PillarState, FlattenedValueRetrieval)
     EXPECT_EQ(flattened_values[i], gt_values[i]);
   }
 
+}
+
+TEST(PillarState, WriteFlattenedValues)
+{
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+
+  std::vector<std::string> prop_names = {
+    "wall1:length", "wall1:pose2d", "landmark2:pose2d"
+  };
+
+  auto flattened_values = state.get_flattened_values(prop_names);
+  for (size_t i = 0; i < flattened_values.size(); i++)
+  {
+    flattened_values[i] *= 2;
+  }
+
+  state.set_flattened_values(prop_names, flattened_values);
+
+  auto new_flattened_values = state.get_flattened_values(prop_names);
+  for (size_t i = 0; i < flattened_values.size(); ++i) 
+  {
+    EXPECT_EQ(new_flattened_values[i], flattened_values[i]);
+  }
 }
