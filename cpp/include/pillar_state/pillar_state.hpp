@@ -214,14 +214,14 @@ public:
     std::unordered_set<std::string> literal_prop_names;
     if (it != literal_fqnames_.cend())
     {
-      literal_prop_names = get_literal_props_from_node(literal);
+      literal_prop_names = get_prop_names_from_node_name(literal);
     }
 
     return literal_prop_names;
   }
 
   // TODO: change name. low-level function. HAS NO ERROR CHECKING.
-  std::unordered_set<std::string> get_literal_props_from_node(const std::string& node, bool follow_literals = false) const
+  std::unordered_set<std::string> get_prop_names_from_node_name(const std::string& node, bool follow_literals = false) const
   {
     std::unordered_set<std::string> node_properties_found;
     const auto ref = namespace_map_from_fqname_.at(node);
@@ -240,7 +240,7 @@ public:
         // if (follow_literals || !is_child_literal)
         if (follow_node)
         {
-          const auto out = get_literal_props_from_node(fqchild);
+          const auto out = get_prop_names_from_node_name(fqchild);
           for (const auto& m : out)
           {
             node_properties_found.insert(m);
@@ -258,14 +258,14 @@ public:
     return root_node_names_;
   }
 
-  std::unordered_set<std::string> get_all_prop_names() const
+  std::unordered_set<std::string> get_prop_names() const
   {
-    std::unordered_set<std::string> all_prop_names;
+    std::unordered_set<std::string> prop_names;
     for (auto& key : state_.properties())
     {
-      all_prop_names.insert(key.first);
+      prop_names.insert(key.first);
     }
-    return all_prop_names;
+    return prop_names;
   }
 
   int get_prop_size(const std::string prop_name) const
@@ -284,7 +284,7 @@ public:
     return prop_sizes;
   }
 
-  std::unordered_map<std::string, std::pair<int, int>> get_flattened_idxs(const std::vector<std::string> prop_names) const
+  std::unordered_map<std::string, std::pair<int, int>> get_vec_idxs(const std::vector<std::string> prop_names) const
   {
     auto prop_sizes = get_prop_sizes(prop_names);
 
@@ -311,7 +311,7 @@ public:
     return total_size;
   }
 
-  std::vector<double> get_flattened_values(const std::vector<std::string> prop_names) const
+  std::vector<double> get_values_as_vec(const std::vector<std::string> prop_names) const
   {
     std::vector<double> flattened_values;
     flattened_values.resize(get_total_prop_sizes(prop_names), 0.);
@@ -328,7 +328,7 @@ public:
     return flattened_values;
   }
 
-  std::vector<std::string> get_flattened_value_names(const std::vector<std::string> prop_names) const
+  std::vector<std::string> get_value_names_as_vec(const std::vector<std::string> prop_names) const
   {
     std::vector<std::string> flattened_value_names;
     flattened_value_names.resize(get_total_prop_sizes(prop_names), "");
@@ -349,14 +349,14 @@ public:
     return flattened_value_names;
   }
 
-  bool set_flattened_values(const std::vector<std::string> prop_names, const std::vector<double> values)
+  bool set_values_from_vec(const std::vector<std::string> prop_names, const std::vector<double> values)
   {
     if (get_total_prop_sizes(prop_names) != values.size())
     {
       return false;
     }
 
-    auto prop_idxs = get_flattened_idxs(prop_names);
+    auto prop_idxs = get_vec_idxs(prop_names);
     for (const auto& prop_name : prop_names)
     {
       auto idxs = prop_idxs[prop_name];
