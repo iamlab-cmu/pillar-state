@@ -129,7 +129,7 @@ TEST(PillarState, LiteralsAndNodes)
     "frame:door:pose/position",
     "frame:door:pose/quaternion"
     };
-  const auto frame_door_literal_props = state.literal_properties("frame:door");
+  const auto frame_door_literal_props = state.get_literal_prop_names("frame:door");
   std::vector<std::string> frame_door_literal_props_abc(frame_door_literal_props.begin(), frame_door_literal_props.end());
   std::sort(frame_door_literal_props_abc.begin(), frame_door_literal_props_abc.end());
 
@@ -146,9 +146,72 @@ TEST(PillarState, SerializeAndDeserialize)
   const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
   Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
 
-  std::string ser = state.serialize();
+  std::string ser = state.get_serialized_string();
   Pillar::State new_state = Pillar::State::create_from_seralized_string(ser);
 
   EXPECT_EQ(state.num_properties(), new_state.num_properties());
   EXPECT_EQ(state.num_dimensions(), new_state.num_dimensions());
+}
+
+
+TEST(PillarState, ReadVecValues)
+{
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+
+  std::vector<std::string> prop_names = {
+    "wall1:length", "wall1:pose2d", "landmark2:pose2d"
+  };
+
+  auto prop_sizes = state.get_prop_sizes(prop_names);
+  EXPECT_EQ(prop_sizes["wall1:length"], 1);
+  EXPECT_EQ(prop_sizes["wall1:pose2d"], 2);
+  EXPECT_EQ(prop_sizes["landmark2:pose2d"], 2);
+
+  auto vec_idxs = state.get_vec_idxs(prop_names);
+  EXPECT_EQ(vec_idxs["wall1:length"].first, 0);
+  EXPECT_EQ(vec_idxs["wall1:length"].second, 1);
+  EXPECT_EQ(vec_idxs["wall1:pose2d"].first, 1);
+  EXPECT_EQ(vec_idxs["wall1:pose2d"].second, 3);
+  EXPECT_EQ(vec_idxs["landmark2:pose2d"].first, 3);
+  EXPECT_EQ(vec_idxs["landmark2:pose2d"].second, 5);
+
+  auto vec_values = state.get_values_as_vec(prop_names);
+  std::vector<double> gt_values = {80, 40, 0, 23, 2};
+  for (size_t i = 0; i < vec_values.size(); ++i) 
+  {
+    EXPECT_EQ(vec_values[i], gt_values[i]);
+  }
+
+  auto vec_value_names = state.get_value_names_as_vec(prop_names);
+  std::vector<std::string> gt_value_names = {"", "x", "y", "x", "y"};
+  for (size_t i = 0; i < vec_value_names.size(); ++i) 
+  {
+    EXPECT_EQ(vec_values[i], gt_values[i]);
+  }
+
+}
+
+TEST(PillarState, WriteVecValues)
+{
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+
+  std::vector<std::string> prop_names = {
+    "wall1:length", "wall1:pose2d", "landmark2:pose2d"
+  };
+
+  auto vec_values = state.get_values_as_vec(prop_names);
+  for (size_t i = 0; i < vec_values.size(); i++)
+  {
+    vec_values[i] *= 2;
+  }
+
+  state.set_values_from_vec(prop_names, vec_values);
+
+  auto new_vec_values = state.get_values_as_vec(prop_names);
+  for (size_t i = 0; i < vec_values.size(); ++i) 
+  {
+    EXPECT_EQ(new_vec_values[i], vec_values[i]);
+  }
 }
