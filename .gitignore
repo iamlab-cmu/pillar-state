@@ -36,3 +36,5 @@ cpp/include/pillar_state/proto
 
 .vscode
 
+*.egg-info
+*__pycache__

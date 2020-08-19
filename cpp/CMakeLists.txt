@@ -98,3 +98,14 @@ target_link_libraries(pillar_state_test
 )
 
 add_test(NAME pillar_state_test COMMAND pillar_state_test)
+
+# Bindings ######################################
+add_subdirectory(pybind11)
+pybind11_add_module(pillar_state_py
+  src/py_bindings.cpp
+)
+
+target_link_libraries(pillar_state_py PRIVATE
+  #${Protobuf_LIBRARIES}
+  pillar_state
+)
