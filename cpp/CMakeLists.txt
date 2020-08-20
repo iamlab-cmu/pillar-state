@@ -24,10 +24,15 @@ add_library(pillar_state SHARED
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories(${PROTOBUF_INCLUDE_DIR})
 include_directories(include)
+include_directories(pybind11/include)
+
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 target_link_libraries(pillar_state PUBLIC
   #proto
   #${Protobuf_LIBRARIES}
+  ${PYTHON_LIBRARIES}
   yaml-cpp # TODO: add_library this before?
 )
 

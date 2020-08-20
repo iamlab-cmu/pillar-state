@@ -8,8 +8,12 @@
 #include <vector>
 
 #include <yaml-cpp/yaml.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "pillar_state/proto/pillar_state.pb.h"
+
+namespace py = pybind11;
 
 // TODO: not sure to make this namespace Pillar
 namespace Pillar
@@ -92,7 +96,7 @@ public:
     return s;
   }
 
-  static State create_from_seralized_string(const std::string& ser)
+  static State create_from_serialized_string(const std::string& ser)
   {
     State s;
     if (!s.load_from_serialized_string(ser))
@@ -220,38 +224,6 @@ public:
     return literal_prop_names;
   }
 
-  // TODO: change name. low-level function. HAS NO ERROR CHECKING.
-  std::unordered_set<std::string> get_prop_names_from_node_name(const std::string& node, bool follow_literals = false) const
-  {
-    std::unordered_set<std::string> node_properties_found;
-    const auto ref = namespace_map_from_fqname_.at(node);
-    if (ref.is_property())
-    {
-      node_properties_found.insert(node);
-    }
-    else
-    {
-      const auto delim = (ref.is_literal()) ? ":" : "/";
-      for (const auto& child_node : ref.child_namespaces())
-      {
-        const auto fqchild = node + delim + child_node;
-        // const auto is_child_literal = namespace_map_from_fqname_.at(fqchild).is_literal();
-        const bool follow_node = (follow_literals) ? true : !namespace_map_from_fqname_.at(fqchild).is_literal();
-        // if (follow_literals || !is_child_literal)
-        if (follow_node)
-        {
-          const auto out = get_prop_names_from_node_name(fqchild);
-          for (const auto& m : out)
-          {
-            node_properties_found.insert(m);
-          }
-        }
-      }
-    }
-
-    return node_properties_found;
-  }
-
   // Return the names of the top-level nodes
   std::unordered_set<std::string> root_nodes() const
   {
@@ -362,172 +334,28 @@ public:
       auto idxs = prop_idxs[prop_name];
       update_property(prop_name, {values.begin() + idxs.first, values.begin() + idxs.second});
     }
-  }
-
-  // TODO: write later
-  // bool save_to_yaml_file(const std::string& yaml_path, bool force_overwrite = false)
-  // {
-  //   // Attempt to open file for writing
-
-  //   // Emit to YAML
-  //   return false;
-  // }
-
-  // Clears the state and loads file
-  bool load_from_yaml_file(const std::string& yaml_path)
-  {
-    clear();
-    if (!update_from_yaml_file(yaml_path))
-    {
-      // Clear so we don't end up in a weird intermediate state
-      clear();
-      return false;
-    }
-
-    // Rebuild search tree
-    if (!build_state_tree())
-    {
-      // Clear so we don't end up in a weird intermediate state
-      clear();
-      return false;
-    }
 
     return true;
   }
 
-  std::string get_serialized_string() const
+  /* TODO: write later
+  bool save_to_yaml_file(const std::string& yaml_path, bool force_overwrite = false)
+  {
+    // Attempt to open file for writing
+
+    // Emit to YAML
+    return false;
+  }
+  */
+
+  py::bytes get_serialized_string() const
   {
     std::string ser;
     if (!state_.SerializeToString(&ser))
     {
       throw std::runtime_error("Could not serialize to string!");
     }
-    return ser;
-  }
-
-  bool load_from_serialized_string(const std::string& ser)
-  {
-    clear();
-    if (!state_.ParseFromString(ser))
-    {
-      clear();
-      return false;
-    }
-
-    if (!build_state_tree())
-    {
-      // Clear so we don't end up in a weird intermediate state
-      clear();
-      return false;
-    }
-
-    return true;
-  }
-
-  // Traverses the state dictionary to build a tree to do useful things
-  bool build_state_tree()
-  {
-    for (const auto& p : state_.properties())
-    {
-      const auto fq_prop_name = p.first;
-
-      // Split property name
-      const std::string delimiters {":/"};
-
-      size_t begin = 0;
-      size_t current_pos = 0;
-      size_t last_pos = std::string::npos;
-
-      std::vector<std::string> namespaces;
-      std::vector<std::string> fully_qualified_namespaces;
-      std::vector<std::string> fully_qualified_parent_namespaces;
-      std::vector<bool> is_namespace_literal_vec;
-      while ((begin = fq_prop_name.find_first_not_of(delimiters, current_pos)) != std::string::npos)
-      {
-        current_pos = fq_prop_name.find_first_of(delimiters, begin + 1);
-        auto this_namespace_name = fq_prop_name.substr(begin, current_pos - begin);
-        namespaces.push_back(this_namespace_name);
-
-        auto this_fq_namespace_name = fq_prop_name.substr(0, current_pos);
-        fully_qualified_namespaces.push_back(this_fq_namespace_name);
-
-        auto this_fq_parent_name = (last_pos != std::string::npos) ? fq_prop_name.substr(0, begin - 1) : "";
-        fully_qualified_parent_namespaces.push_back(this_fq_parent_name);
-        last_pos = begin;
-
-        // Check delimiter to see whether this namespace represents a literal namespace
-        // Assume the last namespace is never a literal
-        bool is_namespace_literal = false;
-        if (current_pos != std::string::npos)
-        {
-          auto delimiter = fq_prop_name.at(current_pos);
-
-          if (delimiter == ':')
-          {
-            is_namespace_literal = true;
-          }
-        }
-
-        is_namespace_literal_vec.push_back(is_namespace_literal);
-      }
-
-      // Create tree
-      for (size_t n = 0; n < namespaces.size(); ++n)
-      {
-        auto this_fq_namespace = fully_qualified_namespaces[n];
-        auto this_local_name = namespaces[n];
-
-        bool is_literal = is_namespace_literal_vec[n];
-        auto this_fq_parent = fully_qualified_parent_namespaces[n];
-
-        if (namespace_map_from_fqname_.count(this_fq_namespace))
-        {
-          // entry exists already, so just update children if we aren't at the end
-          if ((n + 1) < namespaces.size())
-          {
-            auto child_namespace = namespaces[n+1];
-            namespace_map_from_fqname_.at(this_fq_namespace).register_child_namespace(child_namespace);
-          }
-
-          // assert that the fully qualified parent
-          if (namespace_map_from_fqname_.at(this_fq_namespace).fq_parent_name() != this_fq_parent)
-          {
-            return false;
-          }
-
-          // assert that the literal is the same
-          if (namespace_map_from_fqname_.at(this_fq_namespace).is_literal() != is_literal)
-          {
-            return false;
-          }
-        }
-        else
-        {
-          // create new entry
-          std::unordered_set<std::string> child_namespaces;
-          if ((n + 1) < namespaces.size())
-          {
-            auto child_namespace = namespaces[n+1];
-            child_namespaces.insert(child_namespace);
-          }
-          auto temp = StateTreeNode(this_local_name, this_fq_parent, child_namespaces, is_literal);
-          namespace_map_from_fqname_.insert({this_fq_namespace, temp});
-
-          // Also add here since we're already processing stuff
-          if (is_literal)
-          {
-            literal_fqnames_.insert(this_fq_namespace);
-          }
-
-          if (this_fq_parent.empty())
-          {
-            root_node_names_.insert(this_fq_namespace);
-          }
-        }
-      }
-    }
-
-    return true;
+    return py::bytes(ser);
   }
 
   // Updates the state from a yaml file
@@ -797,6 +625,186 @@ public:
   }
 
 private:
+
+  // Clears the state and loads file
+  bool load_from_yaml_file(const std::string& yaml_path)
+  {
+    clear();
+    if (!update_from_yaml_file(yaml_path))
+    {
+      // Clear so we don't end up in a weird intermediate state
+      clear();
+      return false;
+    }
+
+    // Rebuild search tree
+    if (!build_state_tree())
+    {
+      // Clear so we don't end up in a weird intermediate state
+      clear();
+      return false;
+    }
+
+    return true;
+  }
+
+  bool load_from_serialized_string(const std::string& ser)
+  {
+    clear();
+    if (!state_.ParseFromString(ser))
+    {
+      clear();
+      return false;
+    }
+
+    if (!build_state_tree())
+    {
+      // Clear so we don't end up in a weird intermediate state
+      clear();
+      return false;
+    }
+
+    return true;
+  }
+
+  // TODO: change name. low-level function. HAS NO ERROR CHECKING.
+  std::unordered_set<std::string> get_prop_names_from_node_name(const std::string& node, bool follow_literals = false) const
+  {
+    std::unordered_set<std::string> node_properties_found;
+    const auto ref = namespace_map_from_fqname_.at(node);
+    if (ref.is_property())
+    {
+      node_properties_found.insert(node);
+    }
+    else
+    {
+      const auto delim = (ref.is_literal()) ? ":" : "/";
+      for (const auto& child_node : ref.child_namespaces())
+      {
+        const auto fqchild = node + delim + child_node;
+        // const auto is_child_literal = namespace_map_from_fqname_.at(fqchild).is_literal();
+        const bool follow_node = (follow_literals) ? true : !namespace_map_from_fqname_.at(fqchild).is_literal();
+        // if (follow_literals || !is_child_literal)
+        if (follow_node)
+        {
+          const auto out = get_prop_names_from_node_name(fqchild);
+          for (const auto& m : out)
+          {
+            node_properties_found.insert(m);
+          }
+        }
+      }
+    }
+
+    return node_properties_found;
+  }
+
+  // Traverses the state dictionary to build a tree to do useful things
+  bool build_state_tree()
+  {
+    for (const auto& p : state_.properties())
+    {
+      const auto fq_prop_name = p.first;
+
+      // Split property name
+      const std::string delimiters {":/"};
+
+      size_t begin = 0;
+      size_t current_pos = 0;
+      size_t last_pos = std::string::npos;
+
+      std::vector<std::string> namespaces;
+      std::vector<std::string> fully_qualified_namespaces;
+      std::vector<std::string> fully_qualified_parent_namespaces;
+      std::vector<bool> is_namespace_literal_vec;
+      while ((begin = fq_prop_name.find_first_not_of(delimiters, current_pos)) != std::string::npos)
+      {
+        current_pos = fq_prop_name.find_first_of(delimiters, begin + 1);
+        auto this_namespace_name = fq_prop_name.substr(begin, current_pos - begin);
+        namespaces.push_back(this_namespace_name);
+
+        auto this_fq_namespace_name = fq_prop_name.substr(0, current_pos);
+        fully_qualified_namespaces.push_back(this_fq_namespace_name);
+
+        auto this_fq_parent_name = (last_pos != std::string::npos) ? fq_prop_name.substr(0, begin - 1) : "";
+        fully_qualified_parent_namespaces.push_back(this_fq_parent_name);
+        last_pos = begin;
+
+        // Check delimiter to see whether this namespace represents a literal namespace
+        // Assume the last namespace is never a literal
+        bool is_namespace_literal = false;
+        if (current_pos != std::string::npos)
+        {
+          auto delimiter = fq_prop_name.at(current_pos);
+
+          if (delimiter == ':')
+          {
+            is_namespace_literal = true;
+          }
+        }
+
+        is_namespace_literal_vec.push_back(is_namespace_literal);
+      }
+
+      // Create tree
+      for (size_t n = 0; n < namespaces.size(); ++n)
+      {
+        auto this_fq_namespace = fully_qualified_namespaces[n];
+        auto this_local_name = namespaces[n];
+
+        bool is_literal = is_namespace_literal_vec[n];
+        auto this_fq_parent = fully_qualified_parent_namespaces[n];
+
+        if (namespace_map_from_fqname_.count(this_fq_namespace))
+        {
+          // entry exists already, so just update children if we aren't at the end
+          if ((n + 1) < namespaces.size())
+          {
+            auto child_namespace = namespaces[n+1];
+            namespace_map_from_fqname_.at(this_fq_namespace).register_child_namespace(child_namespace);
+          }
+
+          // assert that the fully qualified parent
+          if (namespace_map_from_fqname_.at(this_fq_namespace).fq_parent_name() != this_fq_parent)
+          {
+            return false;
+          }
+
+          // assert that the literal is the same
+          if (namespace_map_from_fqname_.at(this_fq_namespace).is_literal() != is_literal)
+          {
+            return false;
+          }
+        }
+        else
+        {
+          // create new entry
+          std::unordered_set<std::string> child_namespaces;
+          if ((n + 1) < namespaces.size())
+          {
+            auto child_namespace = namespaces[n+1];
+            child_namespaces.insert(child_namespace);
+          }
+          auto temp = StateTreeNode(this_local_name, this_fq_parent, child_namespaces, is_literal);
+          namespace_map_from_fqname_.insert({this_fq_namespace, temp});
+
+          // Also add here since we're already processing stuff
+          if (is_literal)
+          {
+            literal_fqnames_.insert(this_fq_namespace);
+          }
+
+          if (this_fq_parent.empty())
+          {
+            root_node_names_.insert(this_fq_namespace);
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
   // This is the underlying object that contains the data
   PillarMsg::State state_;
 
