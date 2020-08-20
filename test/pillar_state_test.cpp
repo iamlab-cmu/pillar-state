@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -19,6 +18,7 @@ TEST(PillarState, Nominal)
   state.update_property("object2/prop1/scalar", 7.777);
   state.update_property("object2/prop2/array", {123.123});
 
+  // TODO(jacky): this doesn't seem to print anything?
   std::cout << "What does it look like to print out state? " << std::endl;
   std::cout << state << std::endl;
 
@@ -152,7 +152,6 @@ TEST(PillarState, SerializeAndDeserialize)
   EXPECT_EQ(state.num_properties(), new_state.num_properties());
   EXPECT_EQ(state.num_dimensions(), new_state.num_dimensions());
 }
-
 
 TEST(PillarState, ReadVecValues)
 {

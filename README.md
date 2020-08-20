@@ -46,3 +46,13 @@ Run tests:
 ## Python
 
 `pip install -e python`
+
+# Run Tests
+
+## C++
+
+`./cpp/build/pillar_state_test`
+
+## Python
+
+`pytest --capture=no test/pillar_state_py_test.py`

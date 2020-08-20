@@ -24,7 +24,7 @@ def _do_setup():
               'pillar_state_py': package_files
           },
           install_requires = [
-            'numpy',
+            'numpy', 'pytest'
           ],
          )
 

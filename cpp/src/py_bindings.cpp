@@ -49,6 +49,8 @@ PYBIND11_MODULE(pillar_state_py, m)
 
     .def("get_serialized_string", &P::State::get_serialized_string)
     .def("update_from_yaml_file", &P::State::update_from_yaml_file, py::arg("yaml_path"))
+
+    .def("__str__", &P::State::get_print_str, py::arg("format")=1)
   ;
 
   m.def("return_bytes",

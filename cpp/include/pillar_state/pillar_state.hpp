@@ -450,6 +450,13 @@ public:
     return os;
   }
 
+  std::string get_print_str(int format=1) const
+  {
+     std::ostringstream stream;
+     print(stream, format);
+     return stream.str();
+  }
+
   // Low-level printer for values of a property. Does not include new lines.
   std::ostream& print_property_values(std::ostream& os, const PillarMsg::Property& property) const
   {
