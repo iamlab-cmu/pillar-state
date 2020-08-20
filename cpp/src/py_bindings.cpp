@@ -53,10 +53,4 @@ PYBIND11_MODULE(pillar_state_py, m)
     .def("__str__", &P::State::get_print_str, py::arg("format")=1)
   ;
 
-  m.def("return_bytes",
-      []() {
-      std::string s("\xba\xd0\xba\xd0"); // Not valid UTF-8
-      return py::bytes(s); // Return the data without transcoding
-      }
-    );
 }
