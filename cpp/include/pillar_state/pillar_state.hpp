@@ -301,9 +301,9 @@ public:
     return idxs;
   }
 
-  int get_total_prop_sizes(const std::vector<std::string> prop_names) const
+  size_t get_total_prop_sizes(const std::vector<std::string> prop_names) const
   {
-    int total_size = 0;
+    size_t total_size = 0;
     for (const auto& prop_name : prop_names)
     {
       total_size += get_prop_size(prop_name);

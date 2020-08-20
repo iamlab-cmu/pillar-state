@@ -19,7 +19,6 @@ find_package(Protobuf REQUIRED)
 # Library ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 add_library(pillar_state SHARED
   include/pillar_state/proto/pillar_state.pb.cc # TODO: this should probably be moved out of the include
-  src/pillar_state.cpp
 )
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
