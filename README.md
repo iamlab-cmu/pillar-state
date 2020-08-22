@@ -25,7 +25,14 @@ sudo ldconfig # refresh shared library cache.
 
 # Build
 
-## CPP
+## Clone this repo and its submodules:
+
+`git clone --recursive git@github.com:iamlab-cmu/pillar-state.git`
+
+## C++11
+
+Note: You don't need to compile the C++ view if you're just using the Python view.
+The repo comes with prebuilt C++ shared libraries for Python.
 
 Do this to build (optional `-c | --clean`):
 
@@ -38,4 +45,14 @@ Run tests:
 
 ## Python
 
-TBD
+`pip install -e python`
+
+# Run Tests
+
+## C++
+
+`./cpp/build/pillar_state_test`
+
+## Python
+
+`pytest --capture=no test/pillar_state_py_test.py`

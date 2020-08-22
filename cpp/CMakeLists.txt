@@ -19,16 +19,20 @@ find_package(Protobuf REQUIRED)
 # Library ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 add_library(pillar_state SHARED
   include/pillar_state/proto/pillar_state.pb.cc # TODO: this should probably be moved out of the include
-  src/pillar_state.cpp
 )
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories(${PROTOBUF_INCLUDE_DIR})
 include_directories(include)
+include_directories(pybind11/include)
+
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 target_link_libraries(pillar_state PUBLIC
   #proto
   #${Protobuf_LIBRARIES}
+  ${PYTHON_LIBRARIES}
   yaml-cpp # TODO: add_library this before?
 )
 
@@ -98,3 +102,14 @@ target_link_libraries(pillar_state_test
 )
 
 add_test(NAME pillar_state_test COMMAND pillar_state_test)
+
+# Bindings ######################################
+add_subdirectory(pybind11)
+pybind11_add_module(pillar_state_py
+  src/py_bindings.cpp
+)
+
+target_link_libraries(pillar_state_py PRIVATE
+  #${Protobuf_LIBRARIES}
+  pillar_state
+)

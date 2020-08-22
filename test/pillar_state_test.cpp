@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -19,6 +18,7 @@ TEST(PillarState, Nominal)
   state.update_property("object2/prop1/scalar", 7.777);
   state.update_property("object2/prop2/array", {123.123});
 
+  // TODO(jacky): this doesn't seem to print anything?
   std::cout << "What does it look like to print out state? " << std::endl;
   std::cout << state << std::endl;
 
@@ -77,12 +77,12 @@ TEST(PillarState, StateFromYamlFile)
 {
   const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
   std::cout << "Reading in: " << pillar_env_yaml_path << std::endl;
-  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  auto state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
   std::cout << state << std::endl;
 
   const std::string door_yaml_path = "test/door_state.yaml";
   std::cout << "Reading in: " << door_yaml_path << std::endl;
-  state.load_from_yaml_file(door_yaml_path);
+  state = Pillar::State::create_from_yaml_file(door_yaml_path);
   std::cout << state << std::endl;
 
   EXPECT_TRUE(true);
@@ -147,12 +147,11 @@ TEST(PillarState, SerializeAndDeserialize)
   Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
 
   std::string ser = state.get_serialized_string();
-  Pillar::State new_state = Pillar::State::create_from_seralized_string(ser);
+  Pillar::State new_state = Pillar::State::create_from_serialized_string(ser);
 
   EXPECT_EQ(state.num_properties(), new_state.num_properties());
   EXPECT_EQ(state.num_dimensions(), new_state.num_dimensions());
 }
-
 
 TEST(PillarState, ReadVecValues)
 {
