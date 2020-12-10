@@ -1,8 +1,26 @@
 cmake_minimum_required (VERSION 3.4)
+
+# Read version from text file
+# https://stackoverflow.com/questions/47066115/cmake-get-version-from-multiline-text-file
+file(READ "../version.txt" ver)
+
+string(REGEX MATCH "VERSION_MAJOR ([0-9]*)" _ ${ver})
+set(ver_major ${CMAKE_MATCH_1})
+
+string(REGEX MATCH "VERSION_MINOR ([0-9]*)" _ ${ver})
+set(ver_minor ${CMAKE_MATCH_1})
+
+string(REGEX MATCH "VERSION_PATCH ([0-9]*)" _ ${ver})
+set(ver_patch ${CMAKE_MATCH_1})
+
+message("version: ${ver_major}.${ver_minor}.${ver_patch}")
+
 project (pillar_state
-  VERSION 0.0.0
+  VERSION ${ver_major}.${ver_minor}.${ver_patch}
   LANGUAGES CXX
 )
+
+# message("PILLAR State version: ${PROJECT_VERSION}")
 
 # Flags ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set(CMAKE_CXX_STANDARD 14)
