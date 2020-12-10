@@ -42,7 +42,7 @@ echo "Copying shared libraries to python bindings"
 src_dir=cpp/build/ 
 target_dir=python/pillar_state/_bindings/linux-x86_64
 
-mkdir -p target_dir
+mkdir -p $target_dir
 
 cp $src_dir\/libpillar_state.so $target_dir
 cp $src_dir\/pillar_state_py.cpython-36m-x86_64-linux-gnu.so $target_dir\/pillar_state_py.so
