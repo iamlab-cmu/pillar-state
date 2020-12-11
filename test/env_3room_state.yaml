@@ -1,0 +1,199 @@
+state:
+  - wall1:length:
+    - values: 80.
+  - wall1:thickness:
+    - values: 0.9
+  - wall1:theta:
+    - values: 0.
+  - wall1:pose2d:
+    - values: [40., 0.]
+      value_names: ['x', 'y']
+  - wall2:length:
+    - values: 40.
+  - wall2:thickness:
+    - values: 0.9
+  - wall2:theta:
+    - values: 90.
+  - wall2:pose2d:
+    - values: [0., 20.]
+      value_names: ['x', 'y']
+  - wall3:length:
+    - values: 80.
+  - wall3:thickness:
+    - values: 0.9
+  - wall3:theta:
+    - values: 0.
+  - wall3:pose2d:
+    - values: [40., 40.]
+      value_names: ['x', 'y']
+  - wall4:length:
+    - values: 40.
+  - wall4:thickness:
+    - values: 0.9
+  - wall4:theta:
+    - values: 90.
+  - wall4:pose2d:
+    - values: [80., 20.]
+      value_names: ['x', 'y']
+  - wall5:length:
+    - values: 5.
+  - wall5:thickness:
+    - values: 0.9
+  - wall5:theta:
+    - values: 0.
+  - wall5:pose2d:
+    - values: [17.5, 5.]
+      value_names: ['x', 'y']
+  - wall6:length:
+    - values: 18.
+  - wall6:thickness:
+    - values: 0.9
+  - wall6:theta:
+    - values: 90.
+  - wall6:pose2d:
+    - values: [20., 14.]
+      value_names: ['x', 'y']
+  - wall7:length:
+    - values: 23.
+  - wall7:thickness:
+    - values: 0.9
+  - wall7:theta:
+    - values: 90.
+  - wall7:pose2d:
+    - values: [25., 16.5]
+      value_names: ['x', 'y']
+  - wall8:length:
+    - values: 23.
+  - wall8:thickness:
+    - values: 0.9
+  - wall8:theta:
+    - values: 90.
+  - wall8:pose2d:
+    - values: [45., 11.5]
+      value_names: ['x', 'y']
+  - wall9:length:
+    - values: 23.
+  - wall9:thickness:
+    - values: 0.9
+  - wall9:theta:
+    - values: 90.
+  - wall9:pose2d:
+    - values: [50., 16.5]
+      value_names: ['x', 'y']
+  - wall10:length:
+    - values: 70.
+  - wall10:thickness:
+    - values: 0.9
+  - wall10:theta:
+    - values: 0.
+  - wall10:pose2d:
+    - values: [40., 28.]
+      value_names: ['x', 'y']
+  - wall11:length:
+    - values: 70.
+  - wall11:thickness:
+    - values: 0.9
+  - wall11:theta:
+    - values: 0.
+  - wall11:pose2d:
+    - values: [40., 32.]
+      value_names: ['x', 'y']
+  - wall12:length:
+    - values: 4.
+  - wall12:thickness:
+    - values: 0.9
+  - wall12:theta:
+    - values: 90.
+  - wall12:pose2d:
+    - values: [5., 30.]
+      value_names: ['x', 'y']
+  - wall13:length:
+    - values: 4.
+  - wall13:thickness:
+    - values: 0.9
+  - wall13:theta:
+    - values: 90.
+  - wall13:pose2d:
+    - values: [75., 30.]
+      value_names: ['x', 'y']
+  - corner11:pose2d:
+    - values: [0., 0.]
+      value_names: ['x', 'y']
+  - corner12:pose2d:
+    - values: [80., 0.]
+      value_names: ['x', 'y']
+  - corner32:pose2d:
+    - values: [80., 40.]
+      value_names: ['x', 'y']
+  - corner21:pose2d:
+    - values: [0., 40.]
+      value_names: ['x', 'y']
+  - corner51:pose2d:
+    - values: [15., 5.]
+      value_names: ['x', 'y']
+  - corner52:pose2d:
+    - values: [20., 5.]
+      value_names: ['x', 'y']
+  - corner61:pose2d:
+    - values: [20., 23.]
+      value_names: ['x', 'y']
+  - corner71:pose2d:
+    - values: [25., 5.]
+      value_names: ['x', 'y']
+  - corner72:pose2d:
+    - values: [25., 28.]
+      value_names: ['x', 'y']
+  - corner81:pose2d:
+    - values: [45., 0.]
+      value_names: ['x', 'y']
+  - corner82:pose2d:
+    - values: [45., 23.]
+      value_names: ['x', 'y']
+  - corner91:pose2d:
+    - values: [50., 5.]
+      value_names: ['x', 'y']
+  - corner92:pose2d:
+    - values: [50., 28.]
+      value_names: ['x', 'y']
+  - corner101:pose2d:
+    - values: [5., 28.]
+      value_names: ['x', 'y']
+  - corner102:pose2d:
+    - values: [75., 28.]
+      value_names: ['x', 'y']
+  - corner112:pose2d:
+    - values: [75., 32.]
+      value_names: ['x', 'y']
+  - corner111:pose2d:
+    - values: [5., 32.]
+      value_names: ['x', 'y']
+  # - landmark1:pose2d:
+  #   - values: [45., 25.]
+  #     value_names: ['x', 'y']
+  - landmark2:pose2d:
+    - values: [23., 2.]
+      value_names: ['x', 'y']
+  - landmark3:pose2d:
+    - values: [18., 25.]
+      value_names: ['x', 'y']
+  - landmark4:pose2d:
+    - values: [13., 2.]
+      value_names: ['x', 'y']
+  - landmark5:pose2d:
+    - values: [50., 2.]
+      value_names: ['x', 'y']
+  # - landmark6:pose2d:
+  #   - values: [77., 26.]
+  #     value_names: ['x', 'y']
+  # - landmark7:pose2d:
+  #   - values: [77., 36.]
+  #     value_names: ['x', 'y']
+  # - landmark8:pose2d:
+  #   - values: [3., 34.]
+  #     value_names: ['x', 'y']
+  # - landmark9:pose2d:
+  #   - values: [4., 20.]
+  #     value_names: ['x', 'y']
+  - goal:pose2d:
+    - values: [7., 14.]
+      value_names: ['x', 'y']

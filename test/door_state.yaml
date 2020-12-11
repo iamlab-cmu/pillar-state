@@ -1,0 +1,48 @@
+state:
+# door frame, door panel, and door handle
+  - frame:pose/position:
+    - values: [0., 0., 0.]
+      value_names: ['x', 'y', 'z']
+  - frame:pose/quaternion:
+    - values: [1., 0., 0., 0.]
+      value_names: ['w', 'x', 'y', 'z']
+  - frame:color:
+    - values: [0., 0., 0.]
+      value_names: ['r', 'g', 'b']
+  - frame:door:pose/position:
+    - values: [0., 0., 0.]
+      value_names: ['x', 'y', 'z']
+  - frame:door:pose/quaternion:
+    - values: [1., 0., 0., 0.]
+      value_names: ['w', 'x', 'y', 'z']
+  - frame:door:color:
+    - values: [0., 0., 0.]
+      value_names: ['r', 'g', 'b']
+  - frame:door:handle:pose/position:
+    - values: [0., 0., 0.]
+      value_names: ['x', 'y', 'z']
+  - frame:door:handle:pose/quaternion:
+    - values: [1., 0., 0., 0.]
+      value_names: ['w', 'x', 'y', 'z']
+  - frame:door:handle:color:
+    - values: [0., 0., 0.]
+      value_names: ['r', 'g', 'b']
+  - frame:door:handle:rotation:
+    - values: 0.
+# desk (unrelated to door hierarchy)
+  - desk:pose/position:
+    - values: [0., 0., 0.]
+      value_names: ['x', 'y', 'z']
+  - desk:pose/quaternion:
+    - values: [1., 0., 0., 0.]
+      value_names: ['w', 'x', 'y', 'z']
+  - desk:color:
+    - values: [0., 0., 0.]
+      value_names: ['r', 'g', 'b']
+# properties that don't have literal namespacing
+  - calibration_array:
+    - values: [1.1, -2.2, 3.3]
+  - constants/gravity_accel_const:
+    - values: 9.80665
+  - constants/pi:
+    - values: 3.14159
