@@ -37,7 +37,7 @@ def _import_active_version():
     module_name = "pillar_state_py"
     module_dir = os.path.join(lib_dir, platform)
     module_path = os.path.join(module_dir, "%s.%s" % (module_name, ext))
-    package_path = "pillar_state_py._bindings.%s.%s" % (platform, module_name)
+    package_path = "%s._bindings.%s.%s" % (__package__, platform, module_name)
 
     # print(module_name)
     # print(module_dir)
@@ -47,7 +47,7 @@ def _import_active_version():
     if os.path.isfile(module_path):
         sys.path.append(module_path)
 
-        print("Importing module '%s' (%s)" % (module_name, module_path))
+        # print("Importing module '%s' (%s)" % (module_name, module_path))
         module = importlib.import_module(package_path)
         # https://stackoverflow.com/questions/28826127/dynamically-load-all-names-from-module-in-python
         # Now extract the attributes into the globals() namespace, as 'from ... import *' would do.

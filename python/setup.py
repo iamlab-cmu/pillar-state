@@ -44,16 +44,16 @@ def pillar_state_version():
 
 def _do_setup():
     packages = find_packages('.')
-    package_files = collect_files('pillar_state_py/_bindings/linux-x86_64')
+    package_files = collect_files('pillar_state/_bindings/linux-x86_64')
 
-    setup(name='pillar_state_py',
+    setup(name='pillar_state',
           version=pillar_state_version(),
           author='Timothy Lee, Jacky Liang',
           author_email='tel1@andrew.cmu.edu',
           description='Library for state space modeling with PILLAR.',
           packages=packages,
           package_data={
-              'pillar_state_py': package_files
+              'pillar_state': package_files
           },
           install_requires = [
             'numpy', 'pytest'

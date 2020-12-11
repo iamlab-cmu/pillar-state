@@ -1,4 +1,4 @@
-from pillar_state_py import State
+from pillar_state import State
 
 
 def test_nominal():
