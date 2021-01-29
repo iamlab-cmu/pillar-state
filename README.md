@@ -56,3 +56,8 @@ Run tests:
 ## Python
 
 `pytest --capture=no test/pillar_state_py_test.py`
+
+
+## Gotchas
+
+- Incase you get the `-lyaml-cpp` error while installing pillar_state, please run `sudo apt install libyaml-cpp-dev` to install the yaml headers for C++.
