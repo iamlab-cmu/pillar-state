@@ -23,6 +23,14 @@ sudo make install
 sudo ldconfig # refresh shared library cache.
 ```
 
+## Install other dependencies
+
+The following installs dependencies that are separate from Protobuf:
+
+```
+sudo apt install libyaml-cpp-dev
+```
+
 # Build
 
 ## Clone this repo and its submodules:
