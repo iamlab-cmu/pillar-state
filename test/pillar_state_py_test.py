@@ -182,3 +182,29 @@ def test_write_vec_values():
     new_vec_values = state.get_values_as_vec(prop_names)
     for i in range(len(vec_values)):
         assert new_vec_values[i] == vec_values[i]
+
+
+def test_state_tree_sync_on_create_from_yaml_file():
+    pillar_env_yaml_path = 'test/simple.yaml'
+    state_from_yaml = State.create_from_yaml_file(pillar_env_yaml_path)
+    assert len(state_from_yaml.get_prop_names()) == 1
+    assert len(state_from_yaml.root_nodes()) == 1
+
+
+def test_state_tree_sync_on_update_property():
+    state_from_const = State()
+    # There should be zero root nodes -- the state is empty
+    assert len(state_from_const.get_prop_names()) == 0
+    assert len(state_from_const.root_nodes()) == 0
+    # Update via update_property, which should automatically update the state tree
+    state_from_const.update_property('foo', [1, 2, 3])
+    assert len(state_from_const.get_prop_names()) == 1
+    assert len(state_from_const.root_nodes()) == 1
+
+
+def test_get_print_string_yaml_update():
+    pillar_env_yaml_path = 'test/simple.yaml'
+    state_from_yaml = State.create_from_yaml_file(pillar_env_yaml_path)
+    state_from_const = State()
+    state_from_const.update_property('foo', [1, 2, 3])
+    assert state_from_yaml.__str__() == state_from_const.__str__()

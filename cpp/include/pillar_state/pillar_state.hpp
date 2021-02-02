@@ -109,7 +109,15 @@ public:
   // General version with a property
   void update_property(const std::string& property_name, const PillarMsg::Property& property)
   {
+    // if (property_name)
+    const bool is_prop_name_new = state_.properties().count(property_name) == 0;
     (*state_.mutable_properties())[property_name] = property;
+
+    // TODO: ideally, we would not rebuild the entire state tree as we are doing here
+    if (is_prop_name_new)
+    {
+      build_state_tree();
+    }
   }
 
   // Scalar version
@@ -172,14 +180,8 @@ public:
     // Clear the state object
     state_.mutable_properties()->clear();
 
-    // Clear the namespace tree
-    namespace_map_from_fqname_.clear();
-
-    // Clear the literals
-    literal_fqnames_.clear();
-
-    // Clear the root node names
-    root_node_names_.clear();
+    // Clear the state tree
+    clear_state_tree();
   }
 
   // Returns the *number of state properties*
@@ -706,9 +708,25 @@ private:
     return node_properties_found;
   }
 
-  // Traverses the state dictionary to build a tree to do useful things
+  // Clears the state tree
+  void clear_state_tree()
+  {
+    // Clear the namespace tree
+    namespace_map_from_fqname_.clear();
+
+    // Clear the literals
+    literal_fqnames_.clear();
+
+    // Clear the root node names
+    root_node_names_.clear();
+  }
+
+  // Traverses the state dictionary to build a tree to do useful things. Clears tree first.
   bool build_state_tree()
   {
+    // Clears the state tree first
+    clear_state_tree();
+
     for (const auto& p : state_.properties())
     {
       const auto fq_prop_name = p.first;
