@@ -214,3 +214,35 @@ TEST(PillarState, WriteVecValues)
     EXPECT_EQ(new_vec_values[i], vec_values[i]);
   }
 }
+
+TEST(PillarState, Copy)
+{
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  Pillar::State state_copy = state.copy();
+
+  auto prop_names = state.get_prop_names();
+  std::vector<std::string> prop_names_vec;
+  prop_names_vec.insert(prop_names_vec.end(), prop_names.begin(), prop_names.end());
+
+  auto vec_values = state.get_values_as_vec(prop_names_vec);
+  auto vec_values_copy = state_copy.get_values_as_vec(prop_names_vec);
+
+  // Check succesful copy
+  for (size_t i =0; i < vec_values.size(); ++i)
+  {
+    EXPECT_EQ(vec_values[i], vec_values_copy[i]);
+  }
+
+  // Check it's actually a copy
+  for (size_t i =0; i < vec_values.size(); ++i)
+  {
+    vec_values[i] = vec_values[i] * 2 + 1;
+  }
+  state.set_values_from_vec(prop_names_vec, vec_values);
+  auto vec_values_copy_new = state_copy.get_values_as_vec(prop_names_vec);
+  for (size_t i =0; i < vec_values.size(); ++i)
+  {
+    EXPECT_EQ(vec_values_copy_new[i], vec_values_copy[i]);
+  }
+}

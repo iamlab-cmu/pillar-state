@@ -182,3 +182,27 @@ def test_write_vec_values():
     new_vec_values = state.get_values_as_vec(prop_names)
     for i in range(len(vec_values)):
         assert new_vec_values[i] == vec_values[i]
+
+
+def test_copy():
+    pillar_env_yaml_path = "test/env_3room_state.yaml"
+    state = State.create_from_yaml_file(pillar_env_yaml_path)
+    state_copy = state.copy()
+
+    prop_names = state.get_prop_names()
+    prop_names_list = list(prop_names)
+
+    vec_values = state.get_values_as_vec(prop_names_list)
+    vec_values_copy = state_copy.get_values_as_vec(prop_names_list)
+
+    # Check succesful copy
+    for i in range(len(vec_values)):
+        assert vec_values[i] == vec_values_copy[i]
+
+    # Check it's actually a copy
+    for i in range(len(vec_values)):
+        vec_values[i] = vec_values[i] * 2 + 1
+    state.set_values_from_vec(prop_names_list, vec_values)
+    vec_values_copy_new = state_copy.get_values_as_vec(prop_names_list)
+    for i in range(len(vec_values)):
+        assert vec_values_copy_new[i] == vec_values_copy[i]
