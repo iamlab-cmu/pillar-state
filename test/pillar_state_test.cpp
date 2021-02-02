@@ -214,3 +214,14 @@ TEST(PillarState, WriteVecValues)
     EXPECT_EQ(new_vec_values[i], vec_values[i]);
   }
 }
+
+TEST(PillarState, GetPrintStringYamlUpdate)
+{
+  const std::string pillar_env_yaml_path = "test/simple.yaml";
+  Pillar::State state_from_yaml = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  Pillar::State state_from_const;
+  state_from_const.update_property("foo", {1,2,3});
+  auto state_from_const_str = state_from_const.get_print_str();
+  auto state_from_yaml_str = state_from_yaml.get_print_str();
+  EXPECT_EQ(state_from_const_str, state_from_yaml_str);
+}
