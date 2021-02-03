@@ -184,7 +184,21 @@ def test_write_vec_values():
         assert new_vec_values[i] == vec_values[i]
 
 
+def test_get_values_as_vec_deep_copy():
+    # Demonstrates that get_values_as_vec returns a deep copy
+    state = State()
+    prop_name = 'array'
+    state.update_property(prop_name, [1.111, 2.222, 3.333])
+    state_as_vec = state.get_values_as_vec([prop_name])
+
+    state.update_property(prop_name, [44.44, 55.55, 66.66])
+    state_as_vec_after_update = state.get_values_as_vec([prop_name])
+
+    assert state_as_vec != state_as_vec_after_update
+
+
 def test_copy():
+    # Demonstrates that copy returns a deep copy
     pillar_env_yaml_path = "test/env_3room_state.yaml"
     state = State.create_from_yaml_file(pillar_env_yaml_path)
     state_copy = state.copy()
@@ -205,4 +219,5 @@ def test_copy():
     state.set_values_from_vec(prop_names_list, vec_values)
     vec_values_copy_new = state_copy.get_values_as_vec(prop_names_list)
     for i in range(len(vec_values)):
+        assert vec_values[i] != vec_values_copy[i]
         assert vec_values_copy_new[i] == vec_values_copy[i]

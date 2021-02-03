@@ -215,8 +215,23 @@ TEST(PillarState, WriteVecValues)
   }
 }
 
+TEST(PillarState, GetValuesAsVecDeepCopy)
+{
+  // Demonstrates that get_values_as_vec returns a deep copy
+  Pillar::State state;
+  const std::string prop_name = "array";
+  state.update_property(prop_name, {1.111, 2.222, 3.333});
+  auto state_as_vec = state.get_values_as_vec({prop_name});
+
+  state.update_property(prop_name, {44.44, 55.55, 66.66});
+  auto state_as_vec_after_update = state.get_values_as_vec({prop_name});
+
+  EXPECT_NE(state_as_vec, state_as_vec_after_update);
+}
+
 TEST(PillarState, Copy)
 {
+  // Demonstrates that copy returns a deep copy
   const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
   Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
   Pillar::State state_copy = state.copy();
@@ -243,6 +258,7 @@ TEST(PillarState, Copy)
   auto vec_values_copy_new = state_copy.get_values_as_vec(prop_names_vec);
   for (size_t i =0; i < vec_values.size(); ++i)
   {
+    EXPECT_NE(vec_values[i], vec_values_copy[i]);
     EXPECT_EQ(vec_values_copy_new[i], vec_values_copy[i]);
   }
 }
