@@ -86,6 +86,16 @@ class State
 public:
   State() { }
 
+  State(const State& s)
+  {
+    load_from_serialized_string(s.get_serialized_string());
+  }
+
+  State copy() const
+  {
+    return create_from_serialized_string(get_serialized_string());
+  }
+
   static State create_from_yaml_file(const std::string& yaml_path)
   {
     State s;
@@ -109,7 +119,6 @@ public:
   // General version with a property
   void update_property(const std::string& property_name, const PillarMsg::Property& property)
   {
-    // if (property_name)
     const bool is_prop_name_new = state_.properties().count(property_name) == 0;
     (*state_.mutable_properties())[property_name] = property;
 
