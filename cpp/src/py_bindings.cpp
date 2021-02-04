@@ -9,6 +9,7 @@ PYBIND11_MODULE(pillar_state_py, m)
 
   py::class_<P::State>(m, "State")
     .def(py::init<>())
+    .def("copy", &P::State::copy)
     
     .def_static("create_from_yaml_file", &P::State::create_from_yaml_file, py::arg("yaml_path"))
     .def_static("create_from_serialized_string", &P::State::create_from_serialized_string, py::arg("ser"))

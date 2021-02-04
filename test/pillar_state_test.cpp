@@ -214,3 +214,83 @@ TEST(PillarState, WriteVecValues)
     EXPECT_EQ(new_vec_values[i], vec_values[i]);
   }
 }
+
+TEST(PillarState, StateTreeSyncOnCreateFromYamlFile)
+{
+  const std::string pillar_env_yaml_path = "test/simple.yaml";
+  Pillar::State state_from_yaml = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  EXPECT_EQ(state_from_yaml.get_prop_names().size(), 1);
+  EXPECT_EQ(state_from_yaml.root_nodes().size(), 1);
+}
+
+TEST(PillarState, StateTreeSyncOnUpdateProperty)
+{
+  Pillar::State state_from_const;
+  // There should be zero root nodes -- the state is empty
+  EXPECT_EQ(state_from_const.get_prop_names().size(), 0);
+  EXPECT_EQ(state_from_const.root_nodes().size(), 0);
+
+  // Update via update_property, which should automatically update the state tree
+  state_from_const.update_property("foo", {1,2,3});
+  EXPECT_EQ(state_from_const.get_prop_names().size(), 1);
+  EXPECT_EQ(state_from_const.root_nodes().size(), 1);
+}
+
+TEST(PillarState, GetPrintStringYamlUpdate)
+{
+  const std::string pillar_env_yaml_path = "test/simple.yaml";
+  Pillar::State state_from_yaml = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  Pillar::State state_from_const;
+  state_from_const.update_property("foo", {1,2,3});
+  auto state_from_const_str = state_from_const.get_print_str();
+  auto state_from_yaml_str = state_from_yaml.get_print_str();
+  EXPECT_EQ(state_from_const_str, state_from_yaml_str);
+}
+
+TEST(PillarState, GetValuesAsVecDeepCopy)
+{
+  // Demonstrates that get_values_as_vec returns a deep copy
+  Pillar::State state;
+  const std::string prop_name = "array";
+  state.update_property(prop_name, {1.111, 2.222, 3.333});
+  auto state_as_vec = state.get_values_as_vec({prop_name});
+
+  state.update_property(prop_name, {44.44, 55.55, 66.66});
+  auto state_as_vec_after_update = state.get_values_as_vec({prop_name});
+
+  EXPECT_NE(state_as_vec, state_as_vec_after_update);
+}
+
+TEST(PillarState, Copy)
+{
+  // Demonstrates that copy returns a deep copy
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  Pillar::State state_copy = state.copy();
+
+  auto prop_names = state.get_prop_names();
+  std::vector<std::string> prop_names_vec;
+  prop_names_vec.insert(prop_names_vec.end(), prop_names.begin(), prop_names.end());
+
+  auto vec_values = state.get_values_as_vec(prop_names_vec);
+  auto vec_values_copy = state_copy.get_values_as_vec(prop_names_vec);
+
+  // Check succesful copy
+  for (size_t i =0; i < vec_values.size(); ++i)
+  {
+    EXPECT_EQ(vec_values[i], vec_values_copy[i]);
+  }
+
+  // Check it's actually a copy
+  for (size_t i =0; i < vec_values.size(); ++i)
+  {
+    vec_values[i] = vec_values[i] * 2 + 1;
+  }
+  state.set_values_from_vec(prop_names_vec, vec_values);
+  auto vec_values_copy_new = state_copy.get_values_as_vec(prop_names_vec);
+  for (size_t i =0; i < vec_values.size(); ++i)
+  {
+    EXPECT_NE(vec_values[i], vec_values_copy[i]);
+    EXPECT_EQ(vec_values_copy_new[i], vec_values_copy[i]);
+  }
+}
