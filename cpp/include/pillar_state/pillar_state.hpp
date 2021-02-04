@@ -86,6 +86,16 @@ class State
 public:
   State() { }
 
+  State(const State& s)
+  {
+    load_from_serialized_string(s.get_serialized_string());
+  }
+
+  State copy() const
+  {
+    return create_from_serialized_string(get_serialized_string());
+  }
+
   static State create_from_yaml_file(const std::string& yaml_path)
   {
     State s;
