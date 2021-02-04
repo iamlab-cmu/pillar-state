@@ -215,6 +215,38 @@ TEST(PillarState, WriteVecValues)
   }
 }
 
+TEST(PillarState, StateTreeSyncOnCreateFromYamlFile)
+{
+  const std::string pillar_env_yaml_path = "test/simple.yaml";
+  Pillar::State state_from_yaml = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  EXPECT_EQ(state_from_yaml.get_prop_names().size(), 1);
+  EXPECT_EQ(state_from_yaml.root_nodes().size(), 1);
+}
+
+TEST(PillarState, StateTreeSyncOnUpdateProperty)
+{
+  Pillar::State state_from_const;
+  // There should be zero root nodes -- the state is empty
+  EXPECT_EQ(state_from_const.get_prop_names().size(), 0);
+  EXPECT_EQ(state_from_const.root_nodes().size(), 0);
+
+  // Update via update_property, which should automatically update the state tree
+  state_from_const.update_property("foo", {1,2,3});
+  EXPECT_EQ(state_from_const.get_prop_names().size(), 1);
+  EXPECT_EQ(state_from_const.root_nodes().size(), 1);
+}
+
+TEST(PillarState, GetPrintStringYamlUpdate)
+{
+  const std::string pillar_env_yaml_path = "test/simple.yaml";
+  Pillar::State state_from_yaml = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+  Pillar::State state_from_const;
+  state_from_const.update_property("foo", {1,2,3});
+  auto state_from_const_str = state_from_const.get_print_str();
+  auto state_from_yaml_str = state_from_yaml.get_print_str();
+  EXPECT_EQ(state_from_const_str, state_from_yaml_str);
+}
+
 TEST(PillarState, GetValuesAsVecDeepCopy)
 {
   // Demonstrates that get_values_as_vec returns a deep copy
