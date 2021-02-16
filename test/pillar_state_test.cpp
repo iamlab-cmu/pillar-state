@@ -298,7 +298,6 @@ TEST(PillarState, Copy)
 
 TEST(PillarState, KeyError)
 {
-  // Demonstrates that copy returns a deep copy
   const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
   Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
 

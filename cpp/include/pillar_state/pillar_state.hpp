@@ -257,7 +257,8 @@ public:
 
     if (props.find(prop_name) == props.end())
     {
-      throw py::key_error();
+      const std::string error_message = "Property name \"" + prop_name + "\" does not exist.";
+      throw py::key_error(error_message);
     }
 
     return props[prop_name].values_size();
