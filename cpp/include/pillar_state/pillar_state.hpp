@@ -254,6 +254,12 @@ public:
   int get_prop_size(const std::string prop_name) const
   {
     auto props = state_.properties();
+
+    if (props.find(prop_name) == props.end())
+    {
+      throw py::key_error();
+    }
+
     return props[prop_name].values_size();
   }
 
