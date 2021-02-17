@@ -251,9 +251,22 @@ public:
     return prop_names;
   }
 
+  bool has_prop(const std::string& prop_name) const
+  {
+    auto props = state_.properties();
+    return props.find(prop_name) != props.end();
+  }
+
   int get_prop_size(const std::string prop_name) const
   {
     auto props = state_.properties();
+
+    if (!has_prop(prop_name))
+    {
+      const std::string error_message = "Property name \"" + prop_name + "\" does not exist.";
+      throw py::key_error(error_message);
+    }
+
     return props[prop_name].values_size();
   }
 

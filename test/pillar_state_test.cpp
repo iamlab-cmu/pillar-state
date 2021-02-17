@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include <pybind11/pybind11.h>
 
 #include "pillar_state/pillar_state.hpp"
 #include "pillar_state/proto/pillar_state.pb.h"
@@ -293,4 +294,30 @@ TEST(PillarState, Copy)
     EXPECT_NE(vec_values[i], vec_values_copy[i]);
     EXPECT_EQ(vec_values_copy_new[i], vec_values_copy[i]);
   }
+}
+
+TEST(PillarState, KeyError)
+{
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+
+  const std::vector<std::string> prop_names_vec = {"abcdefg"};
+
+  EXPECT_THROW({
+    state.get_values_as_vec(prop_names_vec);  
+  }, pybind11::key_error);
+}
+
+TEST(PillarState, HasProp)
+{
+  const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
+  Pillar::State state = Pillar::State::create_from_yaml_file(pillar_env_yaml_path);
+
+  auto prop_names = state.get_prop_names();
+  for (auto& prop_name : prop_names)
+  {
+    EXPECT_TRUE(state.has_prop(prop_name));
+  }
+
+  EXPECT_FALSE(state.has_prop("abcdefg"));
 }

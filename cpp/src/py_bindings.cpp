@@ -40,6 +40,8 @@ PYBIND11_MODULE(pillar_state_py, m)
     .def("root_nodes", &P::State::root_nodes)
     .def("get_prop_names", &P::State::get_prop_names)
 
+    .def("has_prop", &P::State::has_prop)
+
     .def("get_prop_size", &P::State::get_prop_size, py::arg("prop_name"))
     .def("get_prop_sizes", &P::State::get_prop_sizes, py::arg("prop_names")) 
     .def("get_vec_idxs", &P::State::get_vec_idxs, py::arg("prop_names"))
