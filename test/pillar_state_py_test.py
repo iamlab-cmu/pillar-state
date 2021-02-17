@@ -1,3 +1,4 @@
+import pytest
 from pillar_state import State
 
 
@@ -247,3 +248,22 @@ def test_copy():
     for i in range(len(vec_values)):
         assert vec_values[i] != vec_values_copy[i]
         assert vec_values_copy_new[i] == vec_values_copy[i]
+
+
+def test_key_error():
+    pillar_env_yaml_path = "test/env_3room_state.yaml"
+    state = State.create_from_yaml_file(pillar_env_yaml_path)
+
+    with pytest.raises(KeyError):
+        state.get_values_as_vec(['abcdefg'])
+
+
+def test_has_prop():
+    pillar_env_yaml_path = "test/env_3room_state.yaml"
+    state = State.create_from_yaml_file(pillar_env_yaml_path)
+
+    prop_names = state.get_prop_names()
+    for prop_name in prop_names:
+        assert state.has_prop(prop_name)
+
+    assert not state.has_prop('abcdefg')
