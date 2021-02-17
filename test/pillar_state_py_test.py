@@ -256,3 +256,14 @@ def test_key_error():
 
     with pytest.raises(KeyError):
         state.get_values_as_vec(['abcdefg'])
+
+
+def test_has_prop():
+    pillar_env_yaml_path = "test/env_3room_state.yaml"
+    state = State.create_from_yaml_file(pillar_env_yaml_path)
+
+    prop_names = state.get_prop_names()
+    for prop_name in prop_names:
+        assert state.has_prop(prop_name)
+
+    assert not state.has_prop('abcdefg')
