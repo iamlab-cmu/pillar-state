@@ -267,3 +267,17 @@ def test_has_prop():
         assert state.has_prop(prop_name)
 
     assert not state.has_prop('abcdefg')
+
+
+def test_get_set_items():
+    state = State()
+
+    init_vals = [0, 1, 2]
+    state.update_property('object0/vals', init_vals)
+    for v, init_v in zip(state['object0/vals'], init_vals):
+        assert v == init_v
+
+    new_vals = [1, 2, 3]
+    state['object0/vals'] = new_vals
+    for v, new_v in zip(state['object0/vals'], new_vals):
+        assert v == new_v

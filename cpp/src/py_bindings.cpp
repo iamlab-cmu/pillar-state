@@ -46,7 +46,8 @@ PYBIND11_MODULE(pillar_state_py, m)
     .def("get_prop_sizes", &P::State::get_prop_sizes, py::arg("prop_names")) 
     .def("get_vec_idxs", &P::State::get_vec_idxs, py::arg("prop_names"))
     .def("get_total_prop_sizes", &P::State::get_total_prop_sizes, py::arg("prop_names"))
-    .def("get_values_as_vec", &P::State::get_values_as_vec, py::arg("prop_names"))
+    .def("get_values_as_vec", (std::vector<double> (P::State::*)(const std::vector<std::string>) const)
+        &P::State::get_values_as_vec, py::arg("prop_names"))
     .def("get_value_names_as_vec", &P::State::get_value_names_as_vec, py::arg("prop_names"))
     .def("set_values_from_vec", &P::State::set_values_from_vec, py::arg("prop_names"), py::arg("values"))
 
@@ -54,6 +55,11 @@ PYBIND11_MODULE(pillar_state_py, m)
     .def("update_from_yaml_file", &P::State::update_from_yaml_file, py::arg("yaml_path"))
 
     .def("__str__", &P::State::get_print_str, py::arg("format")=1)
+    
+    .def("__getitem__", (std::vector<double> (P::State::*)(const std::string&) const)
+        &P::State::get_values_as_vec, py::arg("prop_name"))
+    .def("__setitem__", (void (P::State::*)(const std::string&, const std::vector<double>&))
+        &P::State::update_property, py::arg("property_name"), py::arg("values"))
   ;
 
 }

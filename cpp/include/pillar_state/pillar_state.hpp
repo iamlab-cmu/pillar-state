@@ -307,6 +307,12 @@ public:
     return total_size;
   }
 
+  std::vector<double> get_values_as_vec(const std::string& prop_name) const
+  {
+    std::vector<std::string> prop_names = {prop_name};
+    return get_values_as_vec(prop_names);
+  }
+
   std::vector<double> get_values_as_vec(const std::vector<std::string> prop_names) const
   {
     std::vector<double> flattened_values;
