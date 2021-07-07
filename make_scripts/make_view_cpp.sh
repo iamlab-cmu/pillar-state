@@ -32,7 +32,11 @@ fi
 
 # Build
 mkdir -p build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")  \
+    -DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))") \
+    -DPYBIND11_PYTHON_VERSION=$(python -c "import sys; print(sys.version[:3])")
 cmake --build . --config -- -j$nproc
 
 cd ../..
@@ -45,4 +49,4 @@ target_dir=python/pillar_state/_bindings/linux-x86_64
 mkdir -p $target_dir
 
 cp $src_dir\/libpillar_state.so $target_dir
-cp $src_dir\/pillar_state_py.cpython-36m-x86_64-linux-gnu.so $target_dir\/pillar_state_py.so
+cp $src_dir\/pillar_state_py.*.so $target_dir\/pillar_state_py.so
