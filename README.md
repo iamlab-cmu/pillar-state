@@ -23,6 +23,14 @@ sudo make install
 sudo ldconfig # refresh shared library cache.
 ```
 
+## Install Python 3.6
+
+This version of `pillar-state` requires Python 3.6. This may be relaxed in a future release.
+
+```
+sudo apt install python3.6 python3.6-dev
+```
+
 ## Install other dependencies
 
 The following installs dependencies that are separate from Protobuf:
@@ -30,6 +38,22 @@ The following installs dependencies that are separate from Protobuf:
 ```
 sudo apt install libyaml-cpp-dev
 ```
+
+# (Recommended) Create and source virtual env
+
+Create a Python 3.6 virtual environment. The following commands will create a virtual environment named `pillar-state` in `~/envs`. However, you can change the location or name of the virtual environment if you prefer.
+
+```
+virtualenv -p /usr/bin/python3.6 ~/envs/pillar-state
+```
+
+Source the environment:
+
+```
+source ~/envs/pillar-state/bin/activate
+```
+
+This ensures that the `pip install` command in the next step installs to the correct environment.
 
 # Build
 
