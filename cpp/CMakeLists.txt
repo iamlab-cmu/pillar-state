@@ -39,6 +39,10 @@ add_library(pillar_state SHARED
   include/pillar_state/proto/pillar_state.pb.cc # TODO: this should probably be moved out of the include
 )
 
+# enforce Python 3.6 to be consistent with existing build script
+find_package(PythonLibs 3.6 REQUIRED)
+find_package(PythonInterp 3.6 REQUIRED)
+
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories(${PROTOBUF_INCLUDE_DIR})
 include_directories(include)
