@@ -69,6 +69,7 @@ The repo comes with prebuilt C++ shared libraries for Python.
 Do this to build (optional `-c | --clean`):
 
 `./make_scripts/make_proto_cpp.sh --clean`
+
 `./make_scripts/make_view_cpp.sh --clean`
 
 Run tests:

@@ -33,6 +33,7 @@ add_compile_options(-Wall -Wextra)
 # Dependencies ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 find_package(Protobuf REQUIRED)
 #add_subdirectory(proto)
+find_package(yaml-cpp REQUIRED)
 
 # Library ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 add_library(pillar_state SHARED
