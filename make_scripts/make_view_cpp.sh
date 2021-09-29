@@ -36,7 +36,7 @@ mkdir -p build && cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")  \
-    -DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBDIR'), sysconfig.get_config_var('LDLIBRARY')))") \
+    -DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBPL'), sysconfig.get_config_var('LDLIBRARY')))") \
     -DPYBIND11_PYTHON_VERSION=$(python -c "import sys; print(sys.version[:3])")
 cmake --build . --config -- -j$nproc
 
