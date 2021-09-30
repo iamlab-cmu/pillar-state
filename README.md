@@ -2,6 +2,12 @@
 
 # Requirements
 
+## Platform Requirements
+
+Supported Ubuntu version: 18.04
+
+Supported Python versions: 3.6, 3.7
+
 ## Install Protobuf
 
 Instructions are also described: https://github.com/protocolbuffers/protobuf/blob/master/src/README.md
@@ -23,12 +29,22 @@ sudo make install
 sudo ldconfig # refresh shared library cache.
 ```
 
-## Install Python 3.6
+## Install Python with development libraries
 
-This version of `pillar-state` requires Python 3.6. This may be relaxed in a future release.
+For Python 3.6:
 
 ```
 sudo apt install python3.6 python3.6-dev
+```
+
+For Python 3.7:
+
+```
+# (Optional) If Python 3.7 is not available by default for your platform distribution, you can add it here:
+sudo add-apt-repository ppa:deadsnakes/ppa
+# ---------------------------------------------------------------------------------------------------------
+
+sudo apt install python3.7 python3.7-dev
 ```
 
 ## Install other dependencies
@@ -41,11 +57,16 @@ sudo apt install libyaml-cpp-dev
 
 # (Recommended) Create and source virtual env
 
-Create a Python 3.6 virtual environment. The following commands will create a virtual environment named `pillar-state` in `~/envs`. However, you can change the location or name of the virtual environment if you prefer.
+Create a Python virtual environment. The following commands will create a virtual environment named `pillar-state` in `~/envs`. However, you can change the location or name of the virtual environment if you prefer.
 
 ```
-virtualenv -p /usr/bin/python3.6 ~/envs/pillar-state
+virtualenv -p /usr/bin/{PY_VERSION} ~/envs/pillar-state
 ```
+
+where `{PY_VERSION}` is one of:
+- `python3`: Use default Python 3 version if you don't have a preference
+- `python3.6`: Python 3.6
+- `python3.7`: Python 3.7
 
 Source the environment:
 
