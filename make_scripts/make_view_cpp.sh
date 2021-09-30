@@ -31,18 +31,23 @@ if [ "$clean_build_dir" = "1" ]; then
 fi
 
 # Build
+# https://stackoverflow.com/questions/24174394/cmake-is-not-able-to-find-python-libraries
 mkdir -p build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DPYTHON_INCLUDE_DIR=$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")  \
+    -DPYTHON_LIBRARY=$(python -c "import distutils.sysconfig as sysconfig; import os; print(os.path.join(sysconfig.get_config_var('LIBPL'), sysconfig.get_config_var('LDLIBRARY')))") \
+    -DPYBIND11_PYTHON_VERSION=$(python -c "import sys; print(sys.version[:3])")
 cmake --build . --config -- -j$nproc
 
 cd ../..
 
 # Copy .so files to python bindings
 echo "Copying shared libraries to python bindings"
-src_dir=cpp/build/ 
+src_dir=cpp/build
 target_dir=python/pillar_state/_bindings/linux-x86_64
 
 mkdir -p $target_dir
 
-cp $src_dir\/libpillar_state.so $target_dir
-cp $src_dir\/pillar_state_py.cpython-36m-x86_64-linux-gnu.so $target_dir\/pillar_state_py.so
+cp -a $src_dir/libpillar_state.so $target_dir
+cp -a $src_dir/pillar_state_py.*.so $target_dir/pillar_state_py.so
