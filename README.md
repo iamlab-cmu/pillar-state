@@ -40,7 +40,8 @@ sudo apt install python3.6 python3.6-dev
 For Python 3.7:
 
 ```
-# (Optional) If Python 3.7 is not available by default for your platform distribution, you can add it here:
+# (Optional) If Python 3.7 is not available by default for your distribution,
+# you can add it to your apt repositories through this command:
 sudo add-apt-repository ppa:deadsnakes/ppa
 # ---------------------------------------------------------------------------------------------------------
 
