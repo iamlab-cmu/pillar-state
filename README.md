@@ -43,7 +43,7 @@ For Python 3.7:
 # (Optional) If Python 3.7 is not available by default for your distribution,
 # you can add it to your apt repositories through this command:
 sudo add-apt-repository ppa:deadsnakes/ppa
-# ---------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 sudo apt install python3.7 python3.7-dev
 ```
