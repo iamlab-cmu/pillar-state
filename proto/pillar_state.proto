@@ -6,8 +6,7 @@ package PillarMsg;
 
 message Property {
     repeated double values = 1;
-    repeated double variances = 2;
-    repeated string value_names = 3;
+    repeated string value_names = 2;
 }
 
 message State {

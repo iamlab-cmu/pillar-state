@@ -57,15 +57,6 @@ def test_print_empty():
     assert True
 
 
-def test_variance():
-    state = State()
-
-    state.update_property('object0/scalar', 1.111, 0.555)
-    state.update_property('object0/array', [1.111, 2.222], [0.111, 0.222, 0.333, 0.444])
-
-    print(state)
-
-
 def test_state_from_yaml_file():
     pillar_env_yaml_path = 'test/env_3room_state.yaml'
     print('Reading in: ', pillar_env_yaml_path)

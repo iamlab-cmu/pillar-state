@@ -136,13 +136,6 @@ public:
     property.add_values(value);
     update_property(property_name, property);
   }
-  void update_property(const std::string& property_name, double value, double variance)
-  {
-    PillarMsg::Property property;
-    property.add_values(value);
-    property.add_variances(variance);
-    update_property(property_name, property);
-  }
 
   // Array version
   void update_property(const std::string& property_name, const std::vector<double>& values)
@@ -150,14 +143,6 @@ public:
     // create a property
     PillarMsg::Property property;
     *property.mutable_values() = {values.cbegin(), values.cend()};
-    update_property(property_name, property);
-  }
-  void update_property(const std::string& property_name, const std::vector<double>& values, const std::vector<double>& variances)
-  {
-    // create a property
-    PillarMsg::Property property;
-    *property.mutable_values() = {values.cbegin(), values.cend()};
-    *property.mutable_variances() = {variances.cbegin(), variances.cend()};
     update_property(property_name, property);
   }
   void update_property(const std::string& property_name, const std::vector<double>& values, const std::vector<std::string>& value_names)
@@ -168,20 +153,6 @@ public:
     *property.mutable_value_names() = {value_names.cbegin(), value_names.cend()};
     update_property(property_name, property);
   }
-  void update_property(const std::string& property_name, const std::vector<double>& values, const std::vector<std::string>& value_names, const std::vector<double>& variances)
-  {
-    // TODO: consider whether to throw if the value lengths and name lengths don't match
-    PillarMsg::Property property;
-    *property.mutable_values() = {values.cbegin(), values.cend()};
-    *property.mutable_value_names() = {value_names.cbegin(), value_names.cend()};
-    *property.mutable_variances() = {variances.cbegin(), variances.cend()};
-    update_property(property_name, property);
-  }
-  // TODO: verion with variance names. but this might be challenging to define exactly how to do that.
-  // TODO: are variance names even needed? could determine from value names, perhaps.
-  // TODO: e.g., var_xx, var_xy, var_yx, var_yy
-  // TODO: that would assume a certain row- or column-major order
-  // TODO: that also assumes a Gaussian variance
 
   // Clears the state
   void clear()
@@ -410,7 +381,6 @@ public:
 
         std::vector<double> values;
         std::vector<std::string> value_names;
-        std::vector<double> variances;
 
         for (const auto f : property_fields)
         {
@@ -423,17 +393,6 @@ public:
             else
             {
               values = f["values"].as<std::vector<double>>();
-            }
-          }
-          if (f["variances"])
-          {
-            if (f["variances"].Type() == YAML::NodeType::Scalar)
-            {
-              variances.push_back(f["variances"].as<double>());
-            }
-            else
-            {
-              variances = f["variances"].as<std::vector<double>>();
             }
           }
           if (f["value_names"])
@@ -449,7 +408,7 @@ public:
           }
         }
 
-        update_property(property_name, values, value_names, variances);
+        update_property(property_name, values, value_names);
       }
 
       success = true;
@@ -517,29 +476,6 @@ public:
     return os;
   }
 
-  // Low-level printer for variance of a property. Does not include new lines.
-  std::ostream& print_property_variances(std::ostream& os, const PillarMsg::Property& property) const
-  {
-    const auto prop_var_size = property.variances_size();
-
-    os << " -> var: [ ";
-
-    for (auto n = 0; n < prop_var_size; ++n)
-    {
-      os << property.variances(n);
-      if ((n + 1) == prop_var_size)
-      {
-        os << " ]";
-      }
-      else
-      {
-        os << ", ";
-      }
-    }
-
-    return os;
-  }
-
   std::ostream& print_as_property_list(std::ostream& os) const
   {
     // This format will iterate through all the properties
@@ -551,10 +487,9 @@ public:
 
         const auto this_prop = p.second;
         const auto this_prop_value_size = this_prop.values_size();
-        const auto this_prop_var_size = this_prop.variances_size();
 
         // If there isn't anything meaningful to print, just print n/a and skip
-        if (this_prop_value_size == 0 && this_prop_var_size == 0)
+        if (this_prop_value_size == 0)
         {
           os << " n/a" << std::endl;
           continue;
@@ -568,13 +503,6 @@ public:
         if (this_prop_value_size > 0)
         {
           print_property_values(os, this_prop);
-          os << std::endl;
-        }
-
-        // Print variance
-        if (this_prop_var_size > 0)
-        {
-          print_property_variances(os, this_prop);
           os << std::endl;
         }
       }
@@ -624,25 +552,12 @@ public:
     {
       const auto this_prop = state_.properties().at(fqnode);
       const auto this_prop_value_size = this_prop.values_size();
-      const auto this_prop_var_size = this_prop.variances_size();
 
-      if (this_prop_value_size || this_prop_var_size)
+      if (this_prop_value_size  > 0)
       {
-        // Print values
-        if (this_prop_value_size > 0)
-        {
-          os << spaces;
-          print_property_values(os, this_prop);
-          os << std::endl;
-        }
-
-        // Print variance
-        if (this_prop_var_size > 0)
-        {
-          os << spaces;
-          print_property_variances(os, this_prop);
-          os << std::endl;
-        }
+        os << spaces;
+        print_property_values(os, this_prop);
+        os << std::endl;
       }
       else
       {
