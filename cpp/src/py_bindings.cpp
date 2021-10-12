@@ -16,17 +16,10 @@ PYBIND11_MODULE(pillar_state_py, m)
 
     .def("update_property", (void (P::State::*)(const std::string&, double)) 
         &P::State::update_property, py::arg("property_name"), py::arg("value"))
-    .def("update_property", (void (P::State::*)(const std::string&, double, double)) 
-        &P::State::update_property, py::arg("property_name"), py::arg("value"), py::arg("variance"))
-
     .def("update_property", (void (P::State::*)(const std::string&, const std::vector<double>&))
         &P::State::update_property, py::arg("property_name"), py::arg("values"))
-    .def("update_property", (void (P::State::*)(const std::string&, const std::vector<double>&, const std::vector<double>&))
-        &P::State::update_property, py::arg("property_name"), py::arg("values"), py::arg("variances"))
     .def("update_property", (void (P::State::*)(const std::string&, const std::vector<double>&, const std::vector<std::string>&))
         &P::State::update_property, py::arg("property_name"), py::arg("values"), py::arg("value_names"))
-    .def("update_property", (void (P::State::*)(const std::string&, const std::vector<double>&, const std::vector<std::string>&, const std::vector<double>&))
-        &P::State::update_property, py::arg("property_name"), py::arg("values"), py::arg("value_names"), py::arg("variances"))
 
     .def("clear", &P::State::clear)
 

@@ -64,16 +64,6 @@ TEST(PillarState, PrintEmpty)
   EXPECT_TRUE(true);
 }
 
-TEST(PillarState, Variance)
-{
-  Pillar::State state;
-
-  state.update_property("object0/scalar", 1.111, 0.555);
-  state.update_property("object0/array", {1.111, 2.222}, {0.111, 0.222, 0.333, 0.444});
-
-  std::cout << state << std::endl;
-}
-
 TEST(PillarState, StateFromYamlFile)
 {
   const std::string pillar_env_yaml_path = "test/env_3room_state.yaml";
