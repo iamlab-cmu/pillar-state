@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Script variables
 clean_build_dir=
 

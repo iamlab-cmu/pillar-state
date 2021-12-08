@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Script variables
 clean_build_dir=
 
@@ -30,6 +32,9 @@ if [ "$clean_build_dir" = "1" ]; then
     rm -rf $PROTO_OUT_DIR
 fi
 
+
 # Build
 mkdir -p $PROTO_OUT_DIR
 protoc -I proto/ --cpp_out=$PROTO_OUT_DIR proto/pillar_state.proto
+
+echo "Done"
