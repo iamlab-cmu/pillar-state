@@ -110,3 +110,11 @@ Run tests:
 ## Python
 
 `pytest --capture=no test/pillar_state_py_test.py`
+
+# (Optional) Install
+
+If you would like to install `pillar_state` to your system at `/usr/local/`:
+
+`./make_scripts/install_view_cpp.sh`
+
+The script will prompt you for `sudo` privileges.

@@ -13,14 +13,13 @@ set(ver_minor ${CMAKE_MATCH_1})
 string(REGEX MATCH "VERSION_PATCH ([0-9]*)" _ ${ver})
 set(ver_patch ${CMAKE_MATCH_1})
 
-message("version: ${ver_major}.${ver_minor}.${ver_patch}")
+set(PILLAR_STATE_VERSION ${ver_major}.${ver_minor}.${ver_patch})
+message("PILLAR State version: ${PILLAR_STATE_VERSION}")
 
 project (pillar_state
-  VERSION ${ver_major}.${ver_minor}.${ver_patch}
+  VERSION ${PILLAR_STATE_VERSION}
   LANGUAGES CXX
 )
-
-# message("PILLAR State version: ${PROJECT_VERSION}")
 
 # Flags ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 set(CMAKE_CXX_STANDARD 14)
@@ -73,6 +72,18 @@ install(TARGETS pillar_state
 )
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+
+# support for pkg-config (from sbpl -- https://github.com/sbpl/sbpl/blob/master/CMakeLists.txt)
+set(PILLAR_STATE_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
+set(PILLAR_STATE_LIB_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+set(PKG_NAME "pillar_state")
+set(PKG_DESC "PILLAR State")
+set(PKG_PILLAR_STATE_LIBS "-lpillar_state")
+set(pkg_conf_file_in "${CMAKE_CURRENT_SOURCE_DIR}/pillar_state.pc.in")
+set(pkg_conf_file "${PROJECT_BINARY_DIR}/InstallFiles/pillar_state.pc")
+configure_file("${pkg_conf_file_in}" "${pkg_conf_file}" @ONLY)
+install(FILES ${pkg_conf_file} DESTINATION lib/pkgconfig/ COMPONENT pkgconfig)
 
 # Tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 enable_testing()
