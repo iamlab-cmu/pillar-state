@@ -23,7 +23,7 @@ For example, for release 3.12.4, download the `protobuf-all-3.12.4.tar.gz` file.
 ```
 cd path/to/protobuf-3.12.4
 ./configure
-make
+make -j$(nproc)
 make check
 sudo make install
 sudo ldconfig # refresh shared library cache.
